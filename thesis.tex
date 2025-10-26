@@ -1,0 +1,57 @@
+% Master's Thesis Main File
+% Kunal Bhatia
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/metadata}
+
+\begin{document}
+
+% Title page
+\maketitle
+\thispagestyle{empty}
+
+% Front matter
+\frontmatter
+
+% Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+[Abstract to be written - 300 words summarizing entire thesis]
+
+\vspace{1cm}
+\noindent\textbf{Keywords:} Gravitational microlensing, Binary lens systems, Deep learning, Convolutional neural networks, Time series classification, Early detection, LSST
+
+% Acknowledgments
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+[Acknowledgments to be written]
+
+% Table of contents
+\tableofcontents
+\listoffigures
+\listoftables
+
+% Main matter
+\mainmatter
+
+% Include chapters
+\include{chapters/ch1_introduction}
+\include{chapters/ch2_theory}
+\include{chapters/ch3_literature}
+\include{chapters/ch4_methodology}
+\include{chapters/ch5_results}
+\include{chapters/ch6_discussion}
+\include{chapters/ch7_conclusions}
+
+% Bibliography
+\printbibliography[heading=bibintoc]
+
+% Appendices (optional)
+\begin{appendices}
+\include{appendices/appendix_a_code}
+\end{appendices}
+
+\end{document}

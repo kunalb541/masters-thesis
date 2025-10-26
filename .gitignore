@@ -1,0 +1,32 @@
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bcf
+*.run.xml
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+
+# Backup files
+*.bak
+*~
+
+# Build directory
+build/
+
+# Editor files
+*.swp
+*.swo
+.vscode/
+.idea/

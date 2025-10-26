@@ -1,0 +1,67 @@
+% Document class
+\documentclass[12pt,a4paper,twoside,openright]{report}
+
+% Page layout
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3.5cm, right=2.5cm]{geometry}
+
+% Fonts and encoding
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% Graphics and figures
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{float}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% Citations and bibliography
+\usepackage[backend=biber, style=numeric-comp, sorting=none, maxbibnames=99]{biblatex}
+\addbibresource{bibliography/references.bib}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={Master's Thesis - Microlensing Classification},
+    pdfauthor={Kunal Bhatia}
+}
+
+% Other useful packages
+\usepackage{xcolor}
+\usepackage{listings}  % For code
+\usepackage{algorithm}
+\usepackage{algpseudocode}  % For algorithms
+
+% Line spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% Headers and footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+
+% Chapter and section formatting
+\usepackage{titlesec}
+
+% Captions
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf}
+
+% Appendix
+\usepackage[toc,page]{appendix}
