@@ -1,0 +1,22 @@
+% Abstract for Master's Thesis
+
+\cleardoublepage
+\thispagestyle{empty}
+
+\vspace*{50pt}
+
+\section*{Abstract}
+
+The upcoming era of large-scale time-domain surveys---notably the Vera C.~Rubin Observatory's Legacy Survey of Space and Time (\lsst) and the Nancy Grace \romantel\ Space Telescope---will increase gravitational microlensing event detection rates from $\sim$2,000 to over 20,000 events annually. This dramatic increase necessitates automated classification systems capable of distinguishing binary lens events (planetary systems, stellar binaries) from simple Point-Source Point-Lens (PSPL) events. The challenge lies in early-time classification: binary events masquerade as PSPL during their initial phases, yet timely identification is critical for triggering follow-up observations of transient planetary features.
+
+This thesis presents a machine learning framework for automated binary microlensing classification using one-dimensional Convolutional Neural Networks (\cnn s) with TimeDistributed architecture. We generate one million synthetic light curves spanning realistic parameter ranges, deliberately sampling binary configurations that produce distinctive caustic-crossing signatures. The dataset incorporates adaptable observational effects including survey-specific cadence patterns and photometric noise levels matching OGLE, \lsst, and \romantel\ characteristics.
+
+The TimeDistributed \cnn\ processes sequential temporal windows, enabling dynamic classification as observations accumulate rather than requiring complete light curves. We systematically evaluate performance across observation completeness levels, quantifying the confidence-timeliness trade-off essential for operational deployment. Comprehensive benchmarking against traditional $\chi^2$ fitting establishes performance limits and identifies complementary strengths of each approach.
+
+Results demonstrate that deep learning achieves high classification accuracy with partial light curves while maintaining computational efficiency suitable for real-time survey operations. This work provides actionable recommendations for \lsst\ and \romantel\ alert stream integration and delivers an open-source framework ready for deployment in next-generation microlensing surveys.
+
+\vspace{1cm}
+
+\noindent\textbf{Keywords:} Gravitational microlensing, Binary lens systems, Machine learning, Convolutional neural networks, Time series classification, Early detection, LSST, Roman Space Telescope
+
+\cleardoublepage

@@ -1,41 +1,266 @@
-% Master's Thesis Main File
-% Kunal Bhatia
+% Master's Thesis Template - University of Heidelberg
+% Modified for Physics/Astronomy thesis
+% Author: Kunal Bhatia
+% Topic: Machine Learning in Microlensing
+% FIXED: \romantel command, BCOR/DIV syntax, complete structure
 
-\input{preamble/packages}
-\input{preamble/commands}
-\input{preamble/metadata}
+\documentclass[
+     12pt,         % font size
+     a4paper,      % paper format
+     BCOR=10mm,    % binding correction (FIXED)
+     DIV=14,       % stripe size for margin calculation (FIXED)
+     twoside,      % two-sided printing
+     openright,    % chapters start on right page
+     listof=totoc, % lists in table of contents
+     bibliography=totoc, % bibliography in toc
+     ]{scrreprt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% === ENCODING & LANGUAGE ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}           % Better fonts
+\usepackage{microtype}         % Better typography
+
+% === MATHEMATICS ===
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}                % Bold math symbols
+
+% === GRAPHICS & FIGURES ===
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}              % For diagrams
+\usepackage{pgfplots}          % For plots
+\pgfplotsset{compat=1.18}
+
+% === TABLES ===
+\usepackage{booktabs}          % Professional tables
+\usepackage{multirow}
+\usepackage{longtable}         % Tables spanning multiple pages
+
+% === CAPTIONS ===
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{format=plain, font=small, labelfont=bf}
+
+% === UNITS & NUMBERS ===
+\usepackage{siunitx}
+\sisetup{
+    separate-uncertainty=true,
+    multi-part-units=single
+}
+
+% === BIBLIOGRAPHY ===
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{unsrtnat}   % Numbered citations
+
+% === CODE LISTINGS ===
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% === LAYOUT ===
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{geometry}
+\geometry{
+    left=3cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% === HEADERS & FOOTERS ===
+\usepackage{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\clearpairofpagestyles
+\ohead{\headmark}
+\cfoot[\pagemark]{\pagemark}
+
+% === HYPERLINKS (LOAD LAST!) ===
+\usepackage[
+    bookmarks=true,
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfpagelabels,
+    pdfstartview=FitH,
+    bookmarksopen=true,
+    bookmarksnumbered=true,
+    plainpages=false,
+    hypertexnames=false
+]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref} % Smart references
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOM COMMANDS & SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% === ASTRONOMY MACROS ===
+\newcommand{\tE}{t_{\mathrm{E}}}              % Einstein time
+\newcommand{\RE}{\theta_{\mathrm{E}}}         % Einstein radius
+\newcommand{\umin}{u_{\mathrm{min}}}          % Minimum impact parameter
+\newcommand{\tpeak}{t_{\mathrm{peak}}}        % Peak time
+\newcommand{\Amax}{A_{\mathrm{max}}}          % Maximum magnification
+
+% === MISSION NAMES (italicized) ===
+% CRITICAL: Cannot use \roman (conflicts with LaTeX counter command)
+\newcommand{\romantel}{\textit{Roman}}         % Roman Space Telescope
+\newcommand{\lsst}{\textit{LSST}}              % LSST
+\newcommand{\jwst}{\textit{JWST}}              % JWST
+
+% === ABBREVIATIONS ===
+\newcommand{\cnn}{CNN}
+\newcommand{\ml}{ML}
+\newcommand{\ai}{AI}
+
+% === CODE LISTING STYLE ===
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single,
+    breaklines=true,
+    showstringspaces=false
+}
+
+% === TODO NOTES (comment out for final version) ===
+\usepackage{todonotes}
+% \usepackage[disable]{todonotes} % Uncomment to hide todos
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT METADATA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hypersetup{
+    pdftitle={From Light Curves to Labels: Machine Learning in Microlensing},
+    pdfauthor={Kunal Bhatia},
+    pdfsubject={Master's Thesis in Physics},
+    pdfkeywords={microlensing, machine learning, CNN, astronomy}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-% Title page
-\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagenumbering{roman}
+\begin{titlepage}
+\centering
+
+\vspace*{2cm}
+
+{\LARGE\textbf{University of Heidelberg}}\\[0.5cm]
+{\Large Department of Physics and Astronomy}\\[0.5cm]
+{\large Faculty of Physics and Astronomy}
+
+\vspace{3cm}
+
+{\Large\textbf{Master's Thesis}}
+
+\vspace{1.5cm}
+
+{\huge\bfseries From Light Curves to Labels:\\[0.3cm]
+Machine Learning in Microlensing}
+
+\vfill
+
+{\large
+\begin{tabular}{rl}
+\textbf{Author:} & Kunal Bhatia \\[0.2cm]
+\textbf{Matriculation Number:} & 3770453 \\[0.2cm]
+\textbf{First Supervisor:} & Prof.~Dr.~Joachim Wambsganß \\[0.2cm]
+\textbf{Second Supervisor:} & Dr.~Yiannis Tsapras \\[0.2cm]
+\textbf{Submission Date:} & \today
+\end{tabular}
+}
+
+\vspace{2cm}
+
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DECLARATION OF AUTHORSHIP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
 \thispagestyle{empty}
 
-% Front matter
-\frontmatter
+\vspace*{100pt}
 
-% Abstract
-\chapter*{Abstract}
-\addcontentsline{toc}{chapter}{Abstract}
+\section*{Declaration of Authorship}
 
-[Abstract to be written - 300 words summarizing entire thesis]
+\noindent
+I hereby declare that this thesis is my own work and that I have not used any sources or aids other than those stated. I have marked as such all passages taken word-for-word or in content from other works. Furthermore, I assure that the electronic version submitted corresponds completely in content and wording to the printed version of my thesis. I agree that this electronic version may be checked for plagiarism using plagiarism detection software within the university.
 
-\vspace{1cm}
-\noindent\textbf{Keywords:} Gravitational microlensing, Binary lens systems, Deep learning, Convolutional neural networks, Time series classification, Early detection, LSST
+\vspace{3cm}
 
-% Acknowledgments
-\chapter*{Acknowledgments}
-\addcontentsline{toc}{chapter}{Acknowledgments}
+\noindent
+\rule{6cm}{0.4pt}\\
+Heidelberg, \today\\
+Kunal Bhatia
 
-[Acknowledgments to be written]
+\cleardoublepage
 
-% Table of contents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABSTRACT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ACKNOWLEDGMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{50pt}
+
+\section*{Acknowledgments}
+
+I would like to express my sincere gratitude to my supervisors, Prof.~Dr.~Joachim Wambsganß and Dr.~Yiannis Tsapras, for their guidance, support, and valuable insights throughout this research. Their expertise in gravitational microlensing and computational astrophysics has been instrumental in shaping this work.
+
+I am grateful to the members of the Astronomisches Rechen-Institut (ARI) for providing a stimulating research environment and for the many fruitful discussions that contributed to this thesis.
+
+Special thanks to the OGLE and MOA survey teams for making their data publicly available, enabling the validation work presented in this thesis.
+
+Finally, I thank my family and friends for their unwavering support and encouragement during my studies.
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \tableofcontents
-\listoffigures
-\listoftables
+\cleardoublepage
 
-% Main matter
-\mainmatter
+\listoffigures
+\cleardoublepage
+
+\listoftables
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN CONTENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagenumbering{arabic}
 
 % Include chapters
 \include{chapters/ch1_introduction}
@@ -46,12 +271,26 @@
 \include{chapters/ch6_discussion}
 \include{chapters/ch7_conclusions}
 
-% Bibliography
-\printbibliography[heading=bibintoc]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Appendices (optional)
-\begin{appendices}
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{bibliography/references}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
+\appendix
+
 \include{appendices/appendix_a_code}
-\end{appendices}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
