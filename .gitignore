@@ -12,21 +12,26 @@
 *.synctex.gz
 *.bcf
 *.run.xml
+*.nav
+*.snm
+*.vrb
 
-# OS files
-.DS_Store
-Thumbs.db
-*~
+# Build directory (EXCEPT the final PDF)
+build/*
+!build/thesis.pdf
 
 # Backup files
 *.bak
 *~
+.*.swp
 
-# Build directory
-build/
+# OS files
+.DS_Store
+Thumbs.db
+._*
 
 # Editor files
-*.swp
-*.swo
 .vscode/
 .idea/
+*.swp
+*.swo

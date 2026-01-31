@@ -1,7 +1,162 @@
 \chapter{Methodology}
 \label{ch:methodology}
 
-% Chapter 4: Methodology
+\section{Overview}
 
-[Content to be written]
+The Nancy Grace Roman Space Telescope will observe the Galactic bulge with unprecedented cadence and duration, detecting an estimated 27,000 microlensing events over its five-year prime mission \citep{Penny2019}. Unlike ground-based surveys where manual inspection and traditional $\chi^2$ model fitting remain feasible, Roman's high event rate demands automated real-time classification to identify scientifically valuable binary events while observations are ongoing. This capability is essential for coordinating time-sensitive follow-up observations with ground-based networks, which can provide complementary high-resolution spectroscopy and intensive photometric monitoring during critical caustic crossing phases.
 
+We present a machine learning classifier designed specifically for Roman-like observations: 15-minute cadence over 72-day seasons with realistic photometric uncertainties. The classifier processes variable-length light curves and outputs continuously updated probabilities for three event classes—flat (no lensing), single-lens (PSPL), and binary—enabling dynamic decision-making as events unfold. The complete pipeline consists of four components: physically accurate synthetic data generation using VBBinaryLensing \citep{Bozza2010}, a compact neural network architecture combining local feature detection with long-term memory, distributed training across GPU clusters, and comprehensive validation including cross-evaluation studies and impact parameter dependency analysis.
+
+\section{Synthetic Data Generation}
+
+Training a classifier for microlensing requires large datasets with known ground truth labels. Real observations present two fundamental challenges: binary events with well-characterized parameters are rare, and even extensively modeled events have uncertain lens configurations. We address both limitations through physics-based simulation, generating unlimited training examples with perfect ground truth while maintaining full control over the parameter distributions the model encounters.
+
+\subsection{VBBinaryLensing Simulation}
+
+All synthetic light curves are generated using VBBinaryLensing \citep{Bozza2010}, a numerical ray-shooting code that computes gravitational magnification patterns for arbitrary lens configurations. For single-lens events, the code reduces to the analytical point-source point-lens (PSPL) formula:
+\begin{equation}
+A_{\text{PSPL}}(t) = \frac{u(t)^2 + 2}{u(t)\sqrt{u(t)^2 + 4}}, \quad u(t) = \sqrt{u_0^2 + \left(\frac{t - t_0}{t_E}\right)^2},
+\end{equation}
+where $u_0$ is the impact parameter (minimum lens-source separation in Einstein radius units), $t_0$ is the time of closest approach, and $t_E$ is the Einstein crossing time. For binary lenses, no closed-form solution exists; VBBinaryLensing employs adaptive contour integration to solve the lens equation numerically, capturing the complex caustic structures that produce the distinctive sharp features in binary light curves.
+
+Each simulation represents a 72-day observing season with 15-minute cadence, yielding approximately 6,912 observations per event. We sample physical parameters from distributions designed to represent the expected Roman event population. Impact parameters range uniformly from $u_0 = 0.001$ to $u_0 = 1.0$, Einstein timescales follow a logarithmic distribution from 10 to 100 days, and binary parameters span wide ranges: mass ratios from $q = 0.001$ (planetary) to $q = 1.0$ (equal mass), separations from $s = 0.3$ to $s = 3.0$ Einstein radii, and finite source radii from $\rho = 0.001$ to $\rho = 0.01$. Table~\ref{tab:param_ranges} summarizes the complete sampling scheme.
+
+\begin{table}[tb]\centering
+\caption{Physical parameters sampled for synthetic data generation. The baseline distribution represents the general population, while the distinct distribution emphasizes events with pronounced caustic crossings by restricting impact parameter and separation ranges.}
+\label{tab:param_ranges}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Range (Baseline [Distinct])} \\
+\midrule
+Impact parameter & $u_0$ & [0.001, 1.0] [[0.001, 0.3]] \\
+Einstein timescale & $t_E$ & [10, 100] days (log-uniform) \\
+Peak time offset & $t_0$ & [-20, +20] days from center \\
+Source flux & $F_0$ & [1000, 5000] counts \\
+\midrule
+\multicolumn{3}{l}{\textit{Binary events only:}} \\
+Mass ratio & $q$ & [0.001, 1.0] (log-uniform) \\
+Separation & $s$ & [0.3, 3.0] [[0.8, 1.2]] Einstein radii \\
+Source radius & $\rho$ & [0.001, 0.01] (log-uniform) \\
+Orientation & $\alpha$ & [0, $2\pi$] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Observational Realism}
+
+Synthetic light curves must replicate three key observational effects. First, temporal sampling follows Roman's 15-minute cadence with 5\% random gaps simulating weather interruptions and scheduling constraints \citep{Akeson2019}. Second, photometric noise follows a signal-dependent model accounting for both photon statistics and sky background:
+\begin{equation}
+\sigma_{\text{phot}}(F) = \sqrt{\frac{F}{G} + \sigma_{\mathrm{sky}}^2},
+\end{equation}
+where $G = 10$ electrons/ADU is the detector gain and $\sigma_{\mathrm{sky}} = 50$ ADU represents sky background noise. This ensures bright magnification peaks have higher signal-to-noise ratios than baseline flux, matching real observations. Third, each light curve is stored as a sequence of flux measurements, time intervals between observations, and flags indicating whether data were obtained—allowing the classifier to distinguish genuine low-flux measurements from missing data.
+
+\subsection{Training Data Strategy}
+
+We employ a dual-distribution sampling strategy to balance two competing needs. The \textit{baseline} distribution samples the full parameter space, generating events representative of the expected Roman population including many high-impact-parameter cases where binary signatures are subtle or absent. The \textit{distinct} distribution deliberately restricts parameters to enhance binary features: limiting $u_0 < 0.3$ ensures source trajectories pass close to caustic structures, and constraining $s \in [0.8, 1.2]$ concentrates on separations where caustic crossings produce the sharpest flux variations.
+
+Training solely on baseline data yields models that generalize well to realistic populations but may miss clear signatures due to class overlap. Training solely on distinct data produces near-perfect accuracy on events with visible caustics but fails when applied to the full population. The solution is \textit{hybrid training} combining both distributions, exposing the model to both unambiguous examples and realistic population statistics. This approach proved essential for achieving balanced performance across both validation scenarios and operational conditions.
+
+The final dataset consists of 600,000 training events (200,000 per class: flat, PSPL, binary) and 300,000 independent test events (100,000 per class). Equal class proportions ensure unbiased training, though real survey populations are dominated by non-lensing light curves. Separate test sets for baseline and distinct distributions enable cross-evaluation studies examining how models trained on different parameter regimes generalize to different populations.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\textit{[Figure 4.1: Three panels showing representative synthetic light curves for Flat (photometric noise only), PSPL (symmetric magnification peak), and Binary (caustic crossing features) events with Roman-like noise and sampling]}}
+\caption{Example synthetic light curves for each event class generated via VBBinaryLensing. The binary event exhibits sharp caustic crossing features superimposed on the underlying magnification pattern, distinguishing it from the smooth symmetric profile of the single-lens event.}
+\label{fig:example_lightcurves}
+\end{figure}
+
+\section{Classification Architecture}
+
+The classifier must satisfy three operational requirements emerging from real-time survey constraints: sub-millisecond inference to process thousands of events as observations arrive, strictly causal processing using only past and present data (no future peeking), and hierarchical outputs reflecting that detecting any lensing signal represents a fundamentally different task than distinguishing subtle binary features. These requirements guided the design of a compact architecture combining convolutional feature extraction for local pattern recognition with recurrent sequence modeling for long-term memory.
+
+\subsection{Input Representation}
+
+Each light curve enters the model as a variable-length sequence of observations, where each timestep contains three values: the observed flux, the time interval since the previous observation (in hours), and a binary flag indicating whether an observation was obtained. This representation provides both the magnification pattern through flux and the temporal structure through intervals and flags. Flux values are normalized to have zero mean and unit variance; time intervals are clipped at 24 hours to prevent extreme values from dominating. A learned projection maps these three channels to a higher-dimensional internal representation where subsequent layers can extract patterns at multiple scales.
+
+\subsection{Local Feature Extraction}
+
+Caustic crossings—the key signature distinguishing binary from single-lens events—typically evolve over hours. To detect these rapid features, the architecture employs convolutional layers that examine local temporal windows. We use two convolutional blocks with different temporal scales: the first examines patterns over 5 observations (1.25 hours at 15-minute cadence), while the second uses a dilated filter examining patterns over wider windows (2.5 hours). Together, these provide an effective temporal receptive field of approximately 3.25 hours, sufficient to capture most caustic crossing durations while remaining compact enough for rapid processing.
+
+Critically, the convolutions are strictly \textit{causal}: at any timestep $t$, the output depends only on observations up to and including $t$, never future data. This ensures the model can process light curves in real time, updating its classification as each new observation arrives without requiring the complete event.
+
+\subsection{Sequence Memory}
+
+While local features capture caustic crossings, distinguishing event types also requires understanding the overall light curve shape across the full 72-day season. A recurrent network maintains a persistent hidden state that evolves as it processes each observation sequentially, allowing it to remember features like caustic crossings that occurred days before the current timestep. The architecture uses Gated Recurrent Units (GRUs), which balance memory capacity against computational efficiency through learned gating mechanisms that selectively retain or discard information.
+
+Four GRU layers are stacked, with each layer's output feeding the next. Dropout regularization (randomly disabling 10–30\% of connections during training) prevents the model from over-relying on specific pathways, encouraging robust features that generalize to unseen data. The complete recurrent stack maintains both short-term memory of recent observations and long-term memory of features like early-season caustic crossings relevant for final classification decisions.
+
+\subsection{Sequence Aggregation}
+
+After processing the entire sequence, the model must condense the time-varying hidden states into a single fixed-length representation for classification. Two approaches were tested: simple averaging across all valid observations (mean pooling), and learned attention that weights different parts of the sequence by importance. Attention theoretically offers advantages by focusing on the most informative regions like caustic peaks while downweighting baseline regions, but in practice both approaches perform comparably—the classification layer can extract relevant information from the averaged representation. Mean pooling has no learnable parameters; attention adds approximately 16,000 parameters for its learned query and projection matrices.
+
+\subsection{Hierarchical Classification}
+
+The classification head implements a two-stage decision process mirroring the logical structure of the problem. Stage 1 distinguishes genuine microlensing events (any magnification) from flat light curves containing only photometric noise, outputting the probability $P(\text{Non-Flat})$. Stage 2 performs conditional classification on detected events, distinguishing single-lens from binary configurations, outputting $P(\text{Binary} \mid \text{Non-Flat})$. The final three-class probabilities combine both stages:
+\begin{align}
+P(\text{Flat}) &= 1 - P(\text{Non-Flat}) \\
+P(\text{PSPL}) &= P(\text{Non-Flat}) \times \big(1 - P(\text{Binary} \mid \text{Non-Flat})\big) \\
+P(\text{Binary}) &= P(\text{Non-Flat}) \times P(\text{Binary} \mid \text{Non-Flat})
+\end{align}
+
+This hierarchical structure prevents the dominant flat class from suppressing gradients needed to distinguish subtle binary features. Two auxiliary outputs provide additional training signals: a direct three-class softmax head encourages the model to learn representations useful for all classification tasks simultaneously, and a caustic detection head explicitly predicts whether sharp caustic features are present, helping identify low mass-ratio binaries where secondary peaks might be subtle.
+
+The complete architecture contains approximately 15,400 trainable parameters—three orders of magnitude smaller than typical deep networks. This compact size enables sub-millisecond inference: a single forward pass on an NVIDIA A100 GPU processes one event in under 0.5 milliseconds, allowing real-time classification of thousands of events as observations arrive.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\textit{[Figure 4.2: Schematic diagram showing data flow: Input (flux, time intervals, flags) → Convolutional layers (local features, 3.25-hour receptive field) → GRU layers (sequence memory) → Pooling → Hierarchical head (Stage 1: Flat vs Non-Flat; Stage 2: PSPL vs Binary)]}}
+\caption{Architecture of the hierarchical classifier. Convolutional layers extract local temporal patterns including caustic crossings. Stacked GRU layers maintain memory across the 72-day season. The hierarchical head performs two-stage classification: first detecting genuine microlensing, then distinguishing lens configurations.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Training}
+
+\subsection{Loss Function Design}
+
+The training objective combines four terms reflecting different aspects of desired behavior. Stage 1 loss uses binary cross-entropy to train the event detection classifier, receiving the highest weight (2.0) because missing genuine events is more detrimental than misclassifying event types. Stage 2 loss trains the PSPL versus binary classifier (weight 1.0), applied only to truly non-flat events. An auxiliary three-class cross-entropy provides a conventional training signal (weight 0.3), and a calibration term encourages well-calibrated probabilities by optimizing the likelihood of the true class (weight 0.5). Well-calibrated outputs ensure that when the model reports 90\% confidence, approximately 90\% of such predictions are correct—critical for operational decisions about follow-up observations.
+
+\subsection{Optimization and Training Infrastructure}
+
+Training employed the AdamW optimizer \citep{Kingma2014,Loshchilov2019} with initial learning rate $5 \times 10^{-4}$, decaying following a cosine schedule to minimum $1 \times 10^{-6}$ over 300 epochs. A 3-epoch warmup phase gradually increases the learning rate from zero, stabilizing early training. Mixed-precision arithmetic (16-bit floating point for most operations, 32-bit for critical computations) approximately doubles training speed while maintaining numerical stability through gradient scaling.
+
+The 600,000 training examples necessitated distributed computing. Training employed 24 to 48 NVIDIA A100 GPUs across multiple compute nodes, with each GPU processing batches of 512 events (effective batch sizes 12,288–24,576 events). Data were loaded into RAM-backed filesystem on each node, eliminating disk I/O bottlenecks. PyTorch's DistributedDataParallel framework handles gradient synchronization automatically: after each backward pass, gradients are averaged across all GPUs ensuring all model copies stay synchronized. Complete training required approximately 8 hours wall-clock time on 24 GPUs.
+
+Regularization strategies prevent overfitting: dropout randomly disables 10–30\% of GRU connections during training, weight decay applies L2 penalty discouraging large parameter values, and early stopping halts training if validation performance fails to improve for 10 consecutive epochs. Equal class proportions (200,000 events per class) ensure balanced training despite real populations being dominated by non-lensing curves.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\textit{[Figure 4.3: Training and validation loss curves over 300 epochs showing steady convergence without overfitting (validation loss tracks training loss)]}}
+\caption{Training convergence for a representative model. Both losses decrease steadily through warmup and cosine decay phases. Close agreement between training and validation curves indicates good generalization.}
+\label{fig:training_convergence}
+\end{figure}
+
+\section{Evaluation}
+
+\subsection{Cross-Validation Strategy}
+
+Model performance is assessed on two independent test sets: a general set from the baseline distribution (100,000 events per class) and a distinct set emphasizing caustic crossings (100,000 events per class). We trained three model variants—general-trained (mixed baseline+distinct), baseline-trained (baseline only), and distinct-trained (distinct only)—and evaluated each on both test sets, producing four cross-evaluation scenarios examining how models trained on different parameter distributions generalize to different populations.
+
+Primary metrics include overall accuracy (fraction correct), per-class precision and recall, F1-scores (harmonic mean of precision and recall), and area under the receiver operating characteristic curve (ROC-AUC, a threshold-independent measure of separability). For probabilistic predictions, we assess calibration using Expected Calibration Error (ECE): predictions are binned by confidence and the average predicted probability compared with actual fraction correct in each bin. Well-calibrated models show close agreement between predicted and empirical probabilities.
+
+\subsection{Impact Parameter Dependency}
+
+Special attention is devoted to performance versus impact parameter $u_0$ for binary events. Classification accuracy naturally degrades at large $u_0$ where binary features become physically subtle or absent, but quantifying this relationship reveals whether observed degradation represents physical detection limits or algorithmic failures. We plot accuracy versus $u_0$ and construct confusion matrices stratified by impact parameter, demonstrating that performance drops at $u_0 > 0.3$ reflect genuine physical constraints—binary events become indistinguishable from single-lens events at large separations regardless of algorithmic sophistication.
+
+\subsection{Baseline Comparisons}
+
+To contextualize performance, we compare against two baselines. Traditional $\chi^2$ model fitting fits both PSPL and binary models to light curves and selects the best-fit configuration by goodness-of-fit. While this can achieve high accuracy given sufficient computational resources and complete light curves, it requires orders of magnitude more computation than the neural network and cannot provide real-time classification as events unfold. A simple logistic regression on summary features (maximum flux, duration above threshold) establishes minimum achievable performance through basic heuristics.
+
+\subsection{Real-Time Capability}
+
+The classifier's real-time capability is evaluated by truncating test light curves at various completeness fractions and recording accuracy using only partial observations. Early detection curves plot accuracy versus completeness, typically showing the model achieves 80–90\% of final accuracy using only the first 30–50\% of observations. This enables early triggering of follow-up observations while events are still developing, maximizing scientific return from coordinated ground-based campaigns. Reliability diagrams stratified by completeness verify the model remains well-calibrated even when making decisions from incomplete information.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\textit{[Figure 4.4: Four confusion matrices in 2×2 grid showing baseline-trained and distinct-trained models evaluated on baseline and distinct test sets]}}
+\caption{Cross-evaluation results. Diagonal elements show correct classifications; off-diagonal elements reveal where models trained on different parameter distributions succeed or struggle when evaluated on different populations.}
+\label{fig:cross_evaluation}
+\end{figure}
+
+\section{Summary}
+
+This methodology combines physically accurate simulation via VBBinaryLensing with a compact hierarchical classifier designed for Roman's observational constraints. The dual-distribution training strategy balances exposure to both unambiguous caustic signatures and realistic population statistics, achieving robust performance across validation scenarios. The architecture's strict causality and sub-millisecond inference enable real-time classification as observations arrive, addressing the critical operational need for early identification of scientifically valuable binary events while they are still developing. Comprehensive cross-evaluation studies and impact parameter dependency analysis demonstrate that observed performance limitations at large $u_0$ reflect fundamental physical detection limits rather than algorithmic deficiencies.

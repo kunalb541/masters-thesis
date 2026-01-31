@@ -1,20 +1,12 @@
-% Abstract for Master's Thesis
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
 
-\cleardoublepage
-\thispagestyle{empty}
+The Nancy Grace Roman Space Telescope will detect tens of thousands of gravitational microlensing events, with many exhibiting binary lens signatures from star-planet or binary star systems. Early identification of these events is critical for coordinating time-sensitive ground-based follow-up observations to constrain system parameters and detect planetary companions. Traditional classification methods based on $\chi^2$ model fitting are computationally expensive and require complete light curves, limiting their utility for real-time survey operations.
 
-\vspace*{50pt}
+This thesis presents a machine learning classifier that provides real-time classification of microlensing events as they unfold. The CNN-GRU architecture processes Roman-like observations (15-minute cadence, 72-day seasons) and outputs continuously updated probabilities for three event classes: flat (photometric noise), PSPL (single lens), and binary lens systems. This dynamic capability enables rapid decision-making for follow-up strategies, allowing observation requests while events are still developing.
 
-\section*{Abstract}
+Trained on 600,000 synthetic light curves and validated on 300,000 independent events, the classifier achieves 99\% accuracy on events with clear caustic crossings ($u_0 < 0.3$). Performance naturally decreases on the full event population, reflecting the fundamental physical limit where high-impact-parameter binary events become indistinguishable from single-lens profiles. The system provides sub-millisecond inference, making it suitable for processing thousands of events in real-time alert streams.
 
-The upcoming era of large-scale time-domain surveys---notably the Vera C.~Rubin Observatory's Legacy Survey of Space and Time (\lsst) and the Nancy Grace \romantel\ Space Telescope---will increase gravitational microlensing event detection rates from $\sim$2,000 to over 20,000 events annually. This dramatic increase necessitates automated classification systems capable of distinguishing binary lens events (planetary systems, stellar binaries) from simple Point-Source Point-Lens (PSPL) events. The challenge lies in early-time classification: binary events masquerade as PSPL during their initial phases, yet timely identification is critical for triggering follow-up observations of transient planetary features.
-
-This thesis presents a machine learning framework for automated binary microlensing classification using one-dimensional Convolutional Neural Networks (\cnn s) with TimeDistributed architecture. We generate one million synthetic light curves spanning realistic parameter ranges, deliberately sampling binary configurations that produce distinctive caustic-crossing signatures. The dataset incorporates adaptable observational effects including survey-specific cadence patterns and photometric noise levels matching OGLE, \lsst, and \romantel\ characteristics.
-
-The TimeDistributed \cnn\ processes sequential temporal windows, enabling dynamic classification as observations accumulate rather than requiring complete light curves. We systematically evaluate performance across observation completeness levels, quantifying the confidence-timeliness trade-off essential for operational deployment. Comprehensive benchmarking against traditional $\chi^2$ fitting establishes performance limits and identifies complementary strengths of each approach.
-
-Results demonstrate that deep learning achieves high classification accuracy with partial light curves while maintaining computational efficiency suitable for real-time survey operations. This work provides actionable recommendations for \lsst\ and \romantel\ alert stream integration and delivers an open-source framework ready for deployment in next-generation microlensing surveys.
-
-\vspace{1cm}
+The classifier addresses a critical operational need for next-generation microlensing surveys by enabling automated early detection of scientifically valuable binary events. The open-source implementation provides a practical tool for developing Roman alert systems and coordinating observations between space-based and ground-based networks.
 
 \cleardoublepage

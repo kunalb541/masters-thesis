@@ -5,15 +5,15 @@
 % FIXED: \romantel command, BCOR/DIV syntax, complete structure
 
 \documentclass[
-     12pt,         % font size
-     a4paper,      % paper format
-     BCOR=10mm,    % binding correction (FIXED)
-     DIV=14,       % stripe size for margin calculation (FIXED)
-     twoside,      % two-sided printing
-     openright,    % chapters start on right page
-     listof=totoc, % lists in table of contents
-     bibliography=totoc, % bibliography in toc
-     ]{scrreprt}
+     12pt,
+     a4paper,
+     BCOR=10mm,
+     DIV=14,
+     twoside,
+     openright,
+     listof=totoc,
+     bibliography=totoc,
+]{scrreprt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PACKAGES
@@ -244,13 +244,13 @@ Kunal Bhatia
 \pagenumbering{arabic}
 
 % Include chapters
-\include{chapters/ch1_introduction}
-\include{chapters/ch2_theory}
-\include{chapters/ch3_literature}
-\include{chapters/ch4_methodology}
-\include{chapters/ch5_results}
-\include{chapters/ch6_discussion}
-\include{chapters/ch7_conclusions}
+\input{chapters/ch1_introduction}
+\input{chapters/ch2_theory}
+\input{chapters/ch3_literature}
+\input{chapters/ch4_methodology}
+\input{chapters/ch5_results}
+\input{chapters/ch6_discussion}
+\input{chapters/ch7_conclusions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BIBLIOGRAPHY
@@ -268,7 +268,7 @@ Kunal Bhatia
 \cleardoublepage
 \appendix
 
-\include{appendices/appendix_a_code}
+\input{appendices/appendix_a_code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % END DOCUMENT

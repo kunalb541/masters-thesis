@@ -57,7 +57,7 @@ The Einstein radius represents the characteristic angular scale of the lensing e
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{figures/fig_lens_geometry.pdf}
-    \caption[Gravitational lens geometry.]{Schematic diagram of gravitational lens geometry. The observer (O), lens (L), and source (S) are shown with their respective angular diameter distances ($D_\mathrm{l}$, $D_\mathrm{s}$, $D_\mathrm{ls}$). The true source position is $\beta$, the image position is $\theta$, and the light ray is deflected by angle $\alpha$. The Einstein radius $\theta_E$ represents the characteristic angular scale of the lensing effect.}
+    \caption[Gravitational lens geometry.]{Schematic diagram of gravitational lens geometry. The observer (O), lens (L), and source (S) are shown with their respective angular diameter distances ($D_\mathrm{l}$, $D_\mathrm{s}$, $D_\mathrm{ls}$). The true source position is $\beta$, the image position is $\theta$, and the light ray is deflected by angle $\alpha$. The Einstein radius $\theta_E$ represents the characteristic angular scale of the lensing effect. \textbf{Note for revision:} This figure should be redrawn to make the angles ($\alpha$, $\beta$, $\theta$) more clearly distinguishable from one another.}
     \label{fig:lens_geometry}
 \end{figure}
 
@@ -66,7 +66,7 @@ The Einstein radius represents the characteristic angular scale of the lensing e
 
 When the angular Einstein radius is micro-arcsecond, individual lensed images cannot be resolved with current instruments. Instead, observers detect microlensing through the time-dependent magnification of the source flux as the lens–source alignment evolves. The microlensing regime thus differs from strong lensing: no multiple images are seen, and the light curve is symmetric in time for a single lens. Because the image separations are ${\sim}$milli-arcseconds, only the combined flux matters.
 
-Microlensing events occur when a foreground star (or planetary system) passes close to the line of sight to a background star, producing a characteristic brightening and fading. The Einstein radius sets both the angular scale and the time scale of the event; typical Galactic events have Einstein crossing times of days to months, depending on the lens mass and relative motion.
+Microlensing events occur when a foreground star (or planetary system) passes close to the line of sight to a background star, producing a characteristic brightening and fading. The Einstein radius sets both the angular scale and the time scale of the event; typical Galactic events have Einstein crossing times of days to months, depending on the lens mass and relative motion between lens and source.
 
 Microlensing is achromatic for a point source because the lensing magnification is wavelength-independent, although finite-source effects can introduce chromaticity at very high magnifications. The characteristic timescale, known as the Einstein crossing time $t_E$, represents the time for the source to traverse an Einstein radius due to the relative proper motion between lens and source. Section~\ref{sec:light_curves} develops the formalism needed to model microlensing light curves and to interpret their parameters.
 
@@ -74,12 +74,12 @@ Microlensing is achromatic for a point source because the lensing magnification 
 \section{Microlensing Light Curves}
 \label{sec:light_curves}
 
-The light curve of a microlensing event encodes the geometry and kinematics of the lens–source system. In the simplest case of a point source lensed by a single point mass, the flux increases smoothly to a maximum and then declines symmetrically. More complex lenses (e.g., binaries) or finite source sizes introduce caustics, asymmetries and multiple peaks. In this section we derive the standard point-source point-lens (PSPL) magnification formula (\cref{sec:pspl}), define key parameters, outline the effects of binary lenses (\cref{sec:binary_lensing}), and summarize finite-source effects (\cref{sec:finite_source}).
+The light curve of a microlensing event encodes the geometry and kinematics of the lens–source system. In the simplest case of a point source lensed by a single point mass, the magnification rises to a maximum and then declines symmetrically. More complex lenses (e.g., binaries) or finite source sizes introduce \emph{caustics}---curves in the source plane where magnification formally diverges---and corresponding \emph{critical curves} in the lens plane, along with asymmetries and multiple peaks. In this section we derive the standard point-source point-lens (PSPL) magnification formula (\cref{sec:pspl}), define key parameters, outline the effects of binary lenses (\cref{sec:binary_lensing}), and summarize finite-source effects (\cref{sec:finite_source}).
 
 \subsection{Point-Source Point-Lens (PSPL) Model}
 \label{sec:pspl}
 
-For a point source lensed by a single mass, the total magnification $A$ of the unresolved images can be expressed in terms of the dimensionless separation $u$ (in units of $\theta_E$) between the lens and the source. A derivation from the Jacobian of the lens mapping yields
+For a point source lensed by a single mass, the total magnification $A$ of the unresolved images can be expressed in terms of the dimensionless separation $u$ (in units of $\theta_E$) between the lens and the source. The magnification is determined by taking the inverse of the area distortion of the lens mapping. A derivation from the Jacobian of the lens mapping yields
 \begin{equation}
   A(u) = \frac{u^2 + 2}{u \sqrt{u^2 + 4}},
   \label{eq:pspl_mag}
@@ -105,7 +105,7 @@ The observed flux in a microlensing event is
 \end{equation}
 where $F_{\mathrm{base}}$ is the baseline flux (including any blended light from unresolved stars) and $F_{\mathrm{source}}$ is the unlensed flux of the source. This equation accounts for the fact that only the source is magnified, not any blended stars in the same resolution element.
 
-The PSPL model is characterized by three physical parameters: $u_0$, $t_0$, and $t_E$. Events with small $u_0$ (close alignment) produce high-magnification light curves with sharp peaks, while events with large $u_0$ produce broad, low-amplitude variations. The Einstein time $t_E$ sets the overall duration of the event, with shorter times indicating either lower-mass lenses or higher relative velocities. For typical Galactic bulge events, $t_E$ ranges from roughly 10 to 150 days.
+The PSPL model is characterized by three physical parameters: $u_0$, $t_0$, and $t_E$. Events with small $u_0$ (close alignment) produce high-magnification light curves with sharp peaks, while events with large $u_0$ produce broad, low-amplitude variations (see \cref{fig:pspl_lightcurve}). The Einstein time $t_E$ sets the overall duration of the event, with shorter times indicating either lower-mass lenses or higher relative velocities. For typical Galactic bulge events, $t_E$ ranges from roughly 10 to 150 days. Events in the Galactic disk, such as those discovered by the \textit{Gaia} space mission, typically have longer timescales \citep{Wyrzykowski2020} due to different kinematic properties and distances.
 
 \begin{figure}[htbp]
     \centering
@@ -124,15 +124,20 @@ The PSPL model is characterized by three physical parameters: $u_0$, $t_0$, and 
 \subsection{Binary Lenses}
 \label{sec:binary_lensing}
 
-When the lens consists of two masses—such as a star with a planetary companion—the lensing geometry becomes significantly more complex. Binary lenses introduce additional parameters: the projected separation $s$ (in units of $\theta_E$), the mass ratio $q = M_2/M_1$, and the angle $\alpha$ defining the source trajectory relative to the binary axis. For binary separations near $s \sim 1$, the caustic structure creates regions where the magnification is formally infinite (for point sources) or extremely large (for finite sources).
+When the lens consists of two masses---such as a star with a planetary companion---the lensing geometry becomes significantly more complex. Binary lenses introduce additional parameters: the projected separation $s$ between the two lens components (in units of $\theta_E$), the mass ratio $q = M_2/M_1$, and the angle $\alpha$ defining the source trajectory relative to the binary axis. 
+
+\paragraph{Critical Curves and Caustics:}
+For binary lens systems, the lens mapping creates special configurations where the magnification diverges. \emph{Critical curves} are the set of points in the lens plane where the Jacobian determinant of the lens mapping vanishes, corresponding to locations where the image distortion becomes infinite. These critical curves map to corresponding curves in the source plane called \emph{caustics}. When a source crosses a caustic, the light curve exhibits extremely high magnification (formally infinite for a point source) manifesting as sharp spikes or dramatic brightness increases.
+
+For binary separations near $s \sim 1$, the caustic structure becomes particularly rich. The caustic topology depends sensitively on the mass ratio $q$ and separation $s$. Planetary systems with small mass ratios ($q \sim 10^{-3}$ to $10^{-4}$) typically produce a central caustic near the primary star and smaller planetary caustics located away from the binary axis. Wide binary systems ($s > 1$) or close binary systems ($s < 1$) create different caustic geometries that can be used to constrain the binary parameters.
 
 The magnification for a binary lens cannot be written in closed form like \cref{eq:pspl_mag}. Instead, it must be computed either by solving a fifth-order complex polynomial at each time step or by using ray-tracing techniques that simulate the paths of many light rays through the lens system. The resulting light curves exhibit characteristic features that distinguish them from PSPL events:
 
 \begin{itemize}
-  \item \textbf{Caustic crossings:} When the source crosses a caustic, the light curve shows sharp spikes or bumps lasting a fraction of $t_E$. The spike shape depends on the source size and the crossing speed.
+  \item \textbf{Caustic crossings:} When the source crosses a caustic curve, the light curve shows sharp spikes or bumps lasting a fraction of $t_E$. The spike shape depends on the source size and the crossing speed.
   \item \textbf{Asymmetric profiles:} Binary light curves are typically asymmetric, with the rise and fall times differing depending on the source trajectory relative to the caustic structure.
-  \item \textbf{Multiple peaks:} Depending on the geometry, a source may cross multiple caustic features, producing light curves with two or more distinct peaks.
-  \item \textbf{Longer duration anomalies:} Even without caustic crossings, the perturbation from the companion can create extended deviations from the PSPL profile lasting days to weeks.
+  \item \textbf{Multiple peaks:} Depending on the geometry, a source may cross multiple caustic features \citep{Gaudi2012}, producing light curves with two or more distinct peaks.
+  \item \textbf{Longer duration anomalies:} Even without caustic crossings, the perturbation from the companion can create extended deviations from the PSPL profile lasting days to weeks in the case of a stellar companion.
 \end{itemize}
 
 Planetary companions with mass ratios $q \sim 10^{-3}$ to $10^{-4}$ produce caustics that are small compared to the primary Einstein radius. The probability of detecting such planets depends on the survey cadence: high-frequency observations (multiple times per night) are essential to capture short-duration caustic crossings that might otherwise be missed. The complexity of binary lens modeling motivates the machine learning approach developed in this thesis, as traditional fitting methods become computationally prohibitive when analyzing thousands of events in real time.
@@ -140,14 +145,14 @@ Planetary companions with mass ratios $q \sim 10^{-3}$ to $10^{-4}$ produce caus
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/fig_binary_caustics.pdf}
-    \caption[Binary lens caustic structure.]{Illustration of binary lens caustics for a system with separation $s = 1.0$ and mass ratio $q = 0.01$ (representative of a planetary companion). The red central caustic and orange planetary caustic represent regions where magnification becomes extremely large. The two black dots indicate the lens positions (primary at origin, companion at $x = 1.0\,\theta_E$). A source trajectory (blue dashed line) crossing or passing near these caustics produces characteristic deviations from PSPL behavior. The caustic topology depends sensitively on the separation $s$ and mass ratio $q$.}
+    \caption[Binary lens caustic structure.]{Illustration of binary lens caustics for a system with separation $s = 1.0$ and mass ratio $q = 0.01$ (representative of a planetary companion). The red central caustic and orange planetary caustic represent regions in the source plane where magnification becomes extremely large. These caustics correspond to the mapping of critical curves from the lens plane under the lens equation transformation. The two black dots indicate the lens positions (primary at origin, companion at $x = 1.0\,\theta_E$). A source trajectory (blue dashed line) crossing or passing near these caustics produces characteristic deviations from PSPL behavior. The caustic topology depends sensitively on the separation $s$ and mass ratio $q$.}
     \label{fig:binary_caustics}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_binary_lightcurves.pdf}
-    \caption[Examples of binary microlensing light curves.]{Binary microlensing light curves showing diverse morphologies depending on source trajectory and binary parameters. Top: Caustic crossing event with sharp spike. Middle: Near-caustic event with asymmetric perturbation. Bottom: Resonant caustic event with multiple peaks. These features distinguish binary events from the smooth, symmetric PSPL profile and motivate the use of machine learning for automated classification.}
+    \caption[Examples of binary microlensing light curves.]{Binary microlensing light curves showing diverse morphologies depending on source trajectory and binary parameters. The three panels should show: (Top) Caustic crossing event with sharp spike and corresponding lens geometry showing the source path crossing a caustic. (Middle) Near-caustic event with asymmetric perturbation and lens geometry showing close approach to a caustic. (Bottom) Resonant caustic event with multiple peaks and lens geometry showing multiple caustic crossings. These features distinguish binary events from the smooth, symmetric PSPL profile and motivate the use of machine learning for automated classification. \textbf{Note for revision:} This figure should be regenerated as three separate panels with lens geometries included to clearly show the caustic crossings or approaches that produce each light curve morphology.}
     \label{fig:binary_lightcurves}
 \end{figure}
 
@@ -171,7 +176,7 @@ Detecting and characterizing microlensing events requires sustained, high-cadenc
 
 The two major ground-based microlensing surveys, OGLE (Optical Gravitational Lensing Experiment) and MOA (Microlensing Observations in Astrophysics), have been monitoring the Galactic bulge for over two decades. OGLE operates a 1.3-m telescope at Las Campanas Observatory in Chile and monitors approximately 200 million stars across roughly 600 square degrees. The OGLE Early Warning System issues real-time alerts for ongoing events with high magnification, enabling follow-up observations by other groups. MOA uses a 1.8-m telescope at Mount John Observatory in New Zealand and monitors approximately 17 square degrees of the bulge with sampling rates up to six times per night.
 
-Future space-based missions will revolutionize microlensing surveys. The Nancy Grace Roman Space Telescope, scheduled for launch in the mid-2020s, will conduct a dedicated microlensing survey monitoring the Galactic bulge from space, free from weather interruptions and atmospheric seeing effects. Roman's wide-field infrared camera will observe 2.8 square degrees with unprecedented photometric precision, detecting thousands of microlensing events per year and enabling the detection of planets down to Mars mass. The Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST) will also contribute to microlensing science through its deep, wide-area, time-domain survey, though its observing strategy is optimized for transient detection rather than continuous monitoring.
+Future space-based missions will revolutionize microlensing surveys. The Nancy Grace Roman Space Telescope, with a currently planned launch in the mid-2020s (launch date subject to updates), will conduct a dedicated microlensing survey monitoring the Galactic bulge from space, providing continuous coverage unaffected by atmospheric conditions. Roman's wide-field infrared camera will observe 2.8 square degrees with unprecedented photometric precision, detecting thousands of microlensing events per year and enabling the detection of planets down to Mars mass. The Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST) will also contribute to microlensing science through its deep, wide-area, time-domain survey, though its observing strategy is optimized for transient detection rather than continuous monitoring.
 
 \subsection{Photometric Challenges}
 \label{sec:photometric_challenges}
@@ -187,7 +192,7 @@ Extinction and reddening by interstellar dust further modify observed colors and
 
 Monitoring millions of stars night after night poses logistical and technical challenges. Crowded fields demand high image quality and consistent PSF across the field; variable seeing and weather conditions introduce systematic errors that complicate DIA. Detection thresholds vary across the field because the background is dominated by merged stellar wings, and changes in seeing can overwhelm deblending algorithms.
 
-Real-time event detection and follow-up are essential for capturing short perturbations caused by planets. High-magnification events are of particular interest because they have high planet detection efficiencies. Automated anomaly detectors trigger increased sampling when deviations from the PSPL model are seen. A high-cadence strategy may employ survey observations every day, follow-up observations every $\sim$90 minutes near peak, and anomaly monitoring every few minutes when an unexpected deviation occurs. Such multi-tiered cadence maximizes the probability of detecting short-lived planetary signals.
+Real-time event detection and follow-up are essential for capturing short perturbations caused by planets. High-magnification events are of particular interest because they have high planet detection efficiencies. Automated anomaly detectors trigger increased sampling when deviations from the PSPL model are seen. A high-cadence strategy may employ survey observations every day, follow-up observations every $\sim$90 minutes near peak, and anomaly monitoring every few minutes when an unexpected deviation occurs \citep{Yee2012,Henderson2014}. Such multi-tiered cadence maximizes the probability of detecting short-lived planetary signals. Ground-based follow-up networks such as Las Cumbres Observatory and RoboNet \citep{Tsapras2009} provide coordinated global coverage for high-priority targets.
 
 Weather interruptions, moonlight and seasonal visibility limit the temporal coverage from a single site, necessitating networks of telescopes around the globe. Robotic networks and automated analysis pipelines (e.g., OGLE's Early Warning System and MOA's real-time DIA) have become standard tools for coordinating follow-up observations. The development of machine learning classifiers that can rapidly identify anomalous events in real time represents a natural extension of these automated systems, enabling more efficient allocation of follow-up resources.
 
@@ -201,7 +206,7 @@ Machine learning circumvents computational bottlenecks by reframing the problem 
 
 What makes microlensing particularly amenable to machine learning approaches? Several factors contribute: first, the underlying physical model is well-understood and deterministic, allowing generation of essentially unlimited training data through simulation. Second, light curves exhibit characteristic morphologies—smooth symmetric rises for PSPL events, sharp caustic crossing spikes for binaries—that should be recognizable to pattern-matching algorithms. Third, the photometric time series is relatively low-dimensional compared to images, making network architectures tractable without requiring massive computational resources.
 
-In this section we outline why ML is suitable for microlensing time series, introduce convolutional neural networks (CNNs) as the architecture used in this thesis (\cref{sec:cnn_fundamentals}), describe their application to one-dimensional time series data (\cref{sec:cnn_1d}), and explain the training and validation strategies we employ (\cref{sec:training_strategies}).
+In this section we outline why ML is suitable for microlensing time series, introduce the fundamental building blocks of convolutional neural networks (\cref{sec:cnn_fundamentals}), describe the CNN-GRU hierarchical architecture used in this thesis (\cref{sec:cnn_gru_architecture}), and explain the training and validation strategies we employ (\cref{sec:training_strategies}).
 
 \subsection{Convolutional Neural Networks}
 \label{sec:cnn_fundamentals}
@@ -227,16 +232,39 @@ A typical CNN architecture consists of several key building blocks:
 
 The entire network is trained end-to-end using backpropagation, where gradients of a loss function with respect to all weights are computed and used to update parameters through optimization algorithms like Adam or stochastic gradient descent. This hierarchical structure allows a CNN to learn simple features (like sharpness or slopes) in early layers and then combine them into more complex, abstract features (like caustic-crossing anomalies) in deeper layers.
 
-\subsection{1D CNNs for Time Series}
-\label{sec:cnn_1d}
+\subsection{CNN-GRU Hierarchical Architecture}
+\label{sec:cnn_gru_architecture}
 
-While CNNs were originally developed for two-dimensional image analysis, the same principles extend naturally to one-dimensional data like time series. A 1D CNN applies convolutions along the temporal axis, with kernels that learn to recognize patterns in sequences rather than spatial arrangements. For microlensing light curves, this architecture is particularly appropriate because the data is inherently sequential: flux measurements at different times constitute a one-dimensional signal.
+The architecture employed in this thesis combines convolutional feature extraction with recurrent sequence modeling through a hierarchical classification framework specifically designed for real-time microlensing event classification. This hybrid CNN-GRU architecture addresses the unique challenges of processing irregularly sampled, evolving light curves where classification confidence must improve as new observations arrive.
 
-Interpreting the kernel size as a temporal scale provides intuition for network design. For a CNN analyzing microlensing light curves with $\sim$100 observations spanning $\sim$100 days, a kernel of size 5 effectively examines 5-day windows, appropriate for detecting short-timescale planetary anomalies. Kernels of size 11 or 15 capture the overall shape of PSPL events. By stacking multiple convolutional layers with varying kernel sizes, the network builds a hierarchy of representations: early layers detect local features such as the symmetric rise and fall of a microlensing event or the sharper spikes produced by caustic crossings, while deeper layers combine these into higher-level patterns that span the entire light curve.
+\paragraph{Architectural Components:}
 
-One advantage of 1D CNNs for irregularly sampled data is their flexibility with input representation. One-dimensional convolutions naturally handle irregular sampling if time bins are uniform after interpolation or binning. Rather than requiring evenly spaced time points, light curves can be preprocessed into regularly sampled representations. For most microlensing applications, simple interpolation to a fixed grid (e.g., 128 or 256 time bins spanning the event duration) provides a reasonable compromise between preserving information and maintaining tractable network architectures. The 1D CNN architecture requires fewer parameters than fully connected networks, reducing overfitting and computational cost.
+The network consists of four main stages:
 
-The architecture used in this thesis employs several 1D convolution and pooling layers followed by dense layers to classify events and estimate parameters. Subsequent pooling layers aggregate local features, enabling the network to detect features irrespective of their exact timing, providing robustness to small temporal shifts and irregular sampling patterns.
+\begin{enumerate}
+    \item \textbf{Convolutional Feature Extraction:} Causal 1D convolutional layers with depthwise separable filters extract local temporal features from the input light curve. The convolutional kernels (typically size 5--11) detect characteristic patterns such as caustic crossing spikes, symmetric PSPL profiles, and photometric anomalies. Causal convolutions ensure that information at time $t$ depends only on observations at times $\leq t$, preventing data leakage that would artificially inflate early-time classification performance. Batch normalization and residual connections stabilize training and enable deeper architectures.
+    
+    \item \textbf{Recurrent Sequence Modeling:} Multi-layer Gated Recurrent Units (GRUs) process the convolutional features sequentially, maintaining a hidden state that accumulates evidence across the light curve. The GRU's gating mechanism allows the network to selectively retain information about caustic crossings or perturbations that occurred early in the event while processing new observations. With 4 GRU layers and hidden dimension $d_{\text{model}} = 64$, the recurrent component can model temporal dependencies spanning the entire event duration (typically 50--150 days). GRUs are preferred over LSTMs for computational efficiency while maintaining similar representational capacity.
+    
+    \item \textbf{Temporal Aggregation:} Flash attention pooling (or mean pooling as a fallback) aggregates the GRU output sequence into a fixed-dimensional representation suitable for classification. Attention pooling learns to weight different temporal regions adaptively, focusing on the most discriminative portions of the light curve. For events with clear caustic crossings, attention typically concentrates on the spike features; for subtle binary perturbations, attention is more distributed across the entire profile.
+    
+    \item \textbf{Hierarchical Classification:} Rather than directly predicting three classes (Flat, PSPL, Binary), the network employs a two-stage hierarchy with an auxiliary head for gradient stability:
+    \begin{itemize}
+        \item \textbf{Stage 1:} Binary classification distinguishing Flat events (no microlensing) from Non-Flat events (PSPL or Binary). This coarse-grained distinction is relatively robust even with partial light curves.
+        \item \textbf{Stage 2:} Conditional on Non-Flat classification, a second binary classifier distinguishes PSPL from Binary events. This fine-grained distinction requires more complete observations to reliably detect binary signatures.
+        \item \textbf{Auxiliary Head:} A direct 3-class classifier provides gradient flow stability during training, preventing the hierarchical stages from collapsing to degenerate solutions.
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{Design Rationale:}
+
+This architecture is motivated by three key requirements for real-time microlensing classification. First, \emph{causality}: the network must classify events based only on observations up to the current time, not future data. Causal convolutions and sequential GRU processing ensure temporal ordering is respected. Second, \emph{sequential refinement}: classification confidence should improve as new observations arrive, naturally handled by the GRU's hidden state accumulation. Third, \emph{hierarchical uncertainty}: distinguishing Flat from Non-Flat is fundamentally easier than distinguishing PSPL from Binary, and the two-stage design reflects this asymmetry in problem difficulty.
+
+The CNN-GRU combination exploits complementary strengths: CNNs detect local temporal patterns invariant to position (caustic spikes can occur anywhere), while GRUs maintain global context across the sequence (remembering that a spike occurred 30 days ago when processing current observations). With approximately 15,400 trainable parameters, the architecture achieves sub-millisecond inference times on modern GPUs, enabling real-time classification of thousands of ongoing events.
+
+\paragraph{Comparison to Alternatives:}
+
+Pure CNN architectures without recurrent components struggle to maintain long-range temporal context, particularly for events where early anomalies inform late-time classification. Transformer architectures with self-attention, while powerful for long sequences, introduce unnecessary computational overhead for the relatively regular cadence of space-based surveys like Roman (15-minute sampling). LSTMs offer similar sequential modeling capacity to GRUs but with higher parameter counts and slower training. The CNN-GRU hybrid thus represents an optimal balance between representational capacity, computational efficiency, and architectural inductive biases suited to the microlensing classification task.
 
 \begin{figure}[htbp]
     \centering
@@ -248,7 +276,7 @@ The architecture used in this thesis employs several 1D convolution and pooling 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/fig_cnn_architecture.pdf}
-    \caption[1D CNN architecture for microlensing classification.]{Schematic diagram of the 1D Convolutional Neural Network architecture used in this thesis. The input light curve (1500 timesteps) passes through alternating convolutional (Conv1D) and pooling layers that extract hierarchical features at different temporal scales. After feature extraction, the data is flattened and passed through fully connected (Dense) layers to produce the final binary classification (PSPL vs. Binary) using a softmax activation. Dropout layers (not shown) are applied after each convolutional layer to prevent overfitting.}
+    \caption[CNN-GRU hierarchical architecture for microlensing classification.]{Schematic diagram of the CNN-GRU hierarchical architecture used in this thesis. The input light curve passes through causal 1D convolutional layers for local feature extraction, followed by multi-layer GRU for sequential temporal modeling. Flash attention pooling or mean pooling aggregates the temporal features. The hierarchical classification head consists of: (1) Stage 1: Flat vs Non-Flat binary classification, (2) Stage 2: PSPL vs Binary binary classification (conditional on Non-Flat), and (3) Auxiliary 3-class head for gradient stability. Dropout and layer normalization are applied throughout to prevent overfitting. The architecture processes approximately 15,400 parameters and achieves sub-millisecond inference times.}
     \label{fig:cnn_architecture}
 \end{figure}
 
@@ -272,4 +300,4 @@ For classification, we use standard metrics: \textbf{accuracy} (overall correct 
 
 When data are limited, cross-validation can be employed: the dataset is split into $k$ folds, with each fold serving as the test set once while the others form the training set. The results are averaged to obtain a robust estimate of performance. However, for large simulated datasets with millions of examples, a simple train–validation–test split typically suffices.
 
-In this thesis we adopt a train–validation–test split, apply dropout and early stopping, and use cross-entropy loss to train a 1D CNN that classifies light curves and estimates microlensing parameters. The model is trained using the Adam optimizer with appropriate learning rates and batch sizes, with hyperparameters tuned based on validation set performance. For operational deployment, we focus on high-confidence predictions where the model's softmax probability exceeds a threshold (e.g., 0.8), ensuring reliable event classification for follow-up triggering decisions.
+In this thesis we adopt a train–validation–test split, apply dropout and early stopping, and use a hierarchical cross-entropy loss to train the CNN-GRU classifier described in \cref{sec:cnn_gru_architecture}. The hierarchical loss combines binary cross-entropy for Stage 1 (Flat vs Non-Flat) and Stage 2 (PSPL vs Binary) with standard cross-entropy for the auxiliary 3-class head, with relative weights tuned to balance the two classification stages. The model is trained using the Adam optimizer with appropriate learning rates and batch sizes, with hyperparameters tuned based on validation set performance. For operational deployment, we focus on high-confidence predictions where the model's predicted probability exceeds a threshold (e.g., 0.8 for binary probability), ensuring reliable event classification for follow-up triggering decisions. The distributed training framework utilizes multiple GPUs to enable efficient exploration of hyperparameter space and rapid iteration on architectural variants.
