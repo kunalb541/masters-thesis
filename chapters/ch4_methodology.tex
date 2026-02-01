@@ -39,7 +39,7 @@ Each simulation represents a 72-day observing season with 15-minute cadence, yie
 \label{tab:shared_params}
 \begin{tabular}{llcc}
 \toprule
-\textbf{Parameter} & \textbf{Symbol} & \textbf{Baseline} & \textbf{Distinct}$^{\dagger}$ \\
+\textbf{Parameter} & \textbf{Symbol} & \textbf{General} & \textbf{Distinct}$^{\dagger}$ \\
 \midrule
 Impact parameter & $u_0$ & [0.001, 1.0] & [0.001, 0.3] \\
 Einstein timescale & $t_E$ (days) & [3, 18]$^{*}$ & [3, 18]$^{*}$ \\
@@ -62,7 +62,7 @@ $^{\dagger}$Distinct distribution restricts $u_0$ to enhance lensing signatures
 \label{tab:binary_params}
 \begin{tabular}{llcc}
 \toprule
-\textbf{Parameter} & \textbf{Symbol} & \textbf{Baseline} & \textbf{Distinct}$^{\dagger}$ \\
+\textbf{Parameter} & \textbf{Symbol} & \textbf{General} & \textbf{Distinct}$^{\dagger}$ \\
 \midrule
 Mass ratio & $q$ & [0.001, 1.0]$^{*}$ & [0.001, 1.0]$^{*}$ \\
 Separation & $s$ ($\theta_E$) & [0.3, 3.0] & [0.8, 1.2] \\
@@ -89,11 +89,11 @@ where $G = 10$ electrons/ADU is the detector gain and $\sigma_{\mathrm{sky}} = 5
 
 \subsection{Training Data Strategy}
 
-We employ a dual-distribution sampling strategy to balance two competing needs. The \textit{baseline} distribution samples the full parameter space, generating events representative of the expected Roman population including many high-impact-parameter cases where binary signatures are subtle or absent. The \textit{distinct} distribution deliberately restricts parameters to enhance binary features: limiting $u_0 < 0.3$ ensures source trajectories pass close to caustic structures, and constraining $s \in [0.8, 1.2]$ concentrates on separations where caustic crossings produce the sharpest flux variations.
+We employ a dual-distribution sampling strategy to balance two competing needs. The \textit{general} distribution samples the full parameter space, generating events representative of the expected Roman population including many high-impact-parameter cases where binary signatures are subtle or absent. The \textit{distinct} distribution deliberately restricts parameters to enhance binary features: limiting $u_0 < 0.3$ ensures source trajectories pass close to caustic structures, and constraining $s \in [0.8, 1.2]$ concentrates on separations where caustic crossings produce the sharpest flux variations.
 
-Training solely on baseline data yields models that generalize well to realistic populations but may miss clear signatures due to class overlap. Training solely on distinct data produces near-perfect accuracy on events with visible caustics but fails when applied to the full population. The solution is \textit{hybrid training} combining both distributions, exposing the model to both unambiguous examples and realistic population statistics. This approach proved essential for achieving balanced performance across both validation scenarios and operational conditions.
+Training solely on general data yields models that generalize well to realistic populations but may miss clear signatures due to class overlap. Training solely on distinct data produces near-perfect accuracy on events with visible caustics but fails when applied to the full population. The solution is \textit{hybrid training} combining both distributions, exposing the model to both unambiguous examples and realistic population statistics. This approach proved essential for achieving balanced performance across both validation scenarios and operational conditions.
 
-The final dataset consists of 600,000 training events (200,000 per class: flat, PSPL, binary) and 300,000 held-out test events (100,000 per class). A small validation split (5\% of training data) is used during training for early stopping and hyperparameter selection. Equal class proportions in all splits ensure unbiased training, though real survey populations are dominated by non-lensing light curves. Separate test sets for baseline and distinct distributions enable cross-evaluation studies examining how models trained on different parameter regimes generalize to different populations.
+The final dataset consists of 600,000 training events (200,000 per class: flat, PSPL, binary) and 300,000 held-out test events (100,000 per class). A small validation split (5\% of training data) is used during training for early stopping and hyperparameter selection. Equal class proportions in all splits ensure unbiased training, though real survey populations are dominated by non-lensing light curves. Separate test sets for general and distinct distributions enable cross-evaluation studies examining how models trained on different parameter regimes generalize to different populations.
 
 \begin{figure}[htbp]
 \centering
@@ -124,7 +124,7 @@ Four GRU layers are stacked, with each layer's output feeding the next. Dropout 
 
 \subsection{Sequence Aggregation}
 
-After processing the entire sequence, the model must condense the time-varying hidden states into a single fixed-length representation for classification. Two approaches were tested: simple averaging across all valid observations (mean pooling), and learned attention that weights different parts of the sequence by importance. Attention theoretically offers advantages by focusing on the most informative regions like caustic peaks while downweighting baseline regions, but in practice both approaches perform comparably—the classification layer can extract relevant information from the averaged representation. Mean pooling has no learnable parameters; attention adds approximately 4,100 parameters for its learned query and projection matrices.
+After processing the entire sequence, the model must condense the time-varying hidden states into a single fixed-length representation for classification. We employ learned attention that weights different parts of the sequence by importance, focusing on the most informative regions like caustic peaks while downweighting baseline regions. The attention mechanism adds approximately 4,128 parameters for its learned query and projection matrices.
 
 \subsection{Hierarchical Classification}
 
@@ -137,7 +137,7 @@ P(\text{Binary}) &= P(\text{Non-Flat}) \times P(\text{Binary} \mid \text{Non-Fla
 
 This hierarchical structure prevents the dominant flat class from suppressing gradients needed to distinguish subtle binary features. Two auxiliary outputs provide additional training signals: a direct three-class softmax head encourages the model to learn representations useful for all classification tasks simultaneously, and a caustic detection head explicitly predicts whether sharp caustic features are present, helping identify low mass-ratio binaries where secondary peaks might be subtle.
 
-The complete architecture contains approximately 33,500 trainable parameters (d\_model=32, 4 GRU layers)—three orders of magnitude smaller than typical deep networks. This compact size enables sub-millisecond inference: a single forward pass on an NVIDIA A100 GPU processes one event in under 0.5 milliseconds, allowing real-time classification of thousands of events as observations arrive.
+The complete architecture contains 33,541 trainable parameters (d\_model=32, 4 GRU layers)—three orders of magnitude smaller than typical deep networks. This compact size enables sub-millisecond inference: a single forward pass on an NVIDIA A100 GPU processes one event in under 0.5 milliseconds, allowing real-time classification of thousands of events as observations arrive.
 
 \begin{figure}[htbp]
 \centering
@@ -154,9 +154,9 @@ The training objective combines four terms reflecting different aspects of desir
 
 \subsection{Optimization and Training Infrastructure}
 
-Training employed the AdamW optimizer \citep{Loshchilov2019} with initial learning rate $5 \times 10^{-4}$, decaying following a cosine schedule to minimum $1 \times 10^{-6}$ over 50 epochs. A 3-epoch warmup phase gradually increases the learning rate from zero, stabilizing early training. Mixed-precision arithmetic (16-bit floating point for most operations, 32-bit for critical computations) approximately doubles training speed while maintaining numerical stability through gradient scaling.
+Training employed the AdamW optimizer \citep{Loshchilov2019} with initial learning rate $5 \times 10^{-4}$, decaying following a cosine schedule to minimum $1 \times 10^{-6}$ over 50 epochs. A 3-epoch warmup phase gradually increases the learning rate from zero, stabilizing early training. Mixed-precision arithmetic (16-bit floating point for most operations, 32-bit for critical computations) improves training throughput while maintaining numerical stability through gradient scaling \citep{Micikevicius2018}.
 
-The 600,000 training examples necessitated distributed computing. Training employed 24 to 48 NVIDIA A100 GPUs across multiple compute nodes, with each GPU processing batches of 256 events (effective batch sizes 12,288–24,576 events through gradient accumulation). Data were loaded into RAM-backed filesystem on each node, eliminating disk I/O bottlenecks. PyTorch's DistributedDataParallel framework handles gradient synchronization automatically: after each backward pass, gradients are averaged across all GPUs ensuring all model copies stay synchronized. Complete training required approximately 8 hours wall-clock time on 24 GPUs.
+The 600,000 training examples necessitated distributed computing. Training employed 24 to 48 NVIDIA A100 GPUs across multiple compute nodes, with each GPU processing microbatches of 256 events with gradient accumulation over 2 steps, yielding an effective per-GPU batch size of 512 events (global effective batch sizes 12,288–24,576 events). Data were loaded into RAM-backed filesystem (/dev/shm) on each node, reducing repeated disk reads after initial load. PyTorch's DistributedDataParallel framework handles gradient synchronization automatically: after each backward pass, gradients are averaged across all GPUs ensuring all model copies stay synchronized. Complete training required approximately 8 hours wall-clock time on 24 GPUs.
 
 Regularization strategies prevent overfitting: dropout randomly disables 10–30\% of GRU connections during training, weight decay applies L2 penalty discouraging large parameter values, and early stopping halts training if validation performance fails to improve for 10 consecutive epochs. Equal class proportions (200,000 events per class) ensure balanced training despite real populations being dominated by non-lensing curves.
 
@@ -171,7 +171,7 @@ Regularization strategies prevent overfitting: dropout randomly disables 10–30
 
 \subsection{Cross-Validation Strategy}
 
-Model performance is assessed on two independent test sets: a general set from the baseline distribution (100,000 events per class) and a distinct set emphasizing caustic crossings (100,000 events per class). We trained three model variants—general-trained (mixed baseline+distinct), baseline-trained (baseline only), and distinct-trained (distinct only)—and evaluated each on both test sets, producing four cross-evaluation scenarios examining how models trained on different parameter distributions generalize to different populations.
+Model performance is assessed on two independent test sets: a general set from the general distribution (100,000 events per class) and a distinct set emphasizing caustic crossings (100,000 events per class). We trained three model variants—general-trained (mixed general+distinct), general-trained (general only), and distinct-trained (distinct only)—and evaluated each on both test sets, producing four cross-evaluation scenarios examining how models trained on different parameter distributions generalize to different populations.
 
 Primary metrics include overall accuracy (fraction correct), per-class precision and recall, F1-scores (harmonic mean of precision and recall), and area under the receiver operating characteristic curve (ROC-AUC, a threshold-independent measure of separability). For probabilistic predictions, we assess calibration using Expected Calibration Error (ECE): predictions are binned by confidence and the average predicted probability compared with actual fraction correct in each bin. Well-calibrated models show close agreement between predicted and empirical probabilities.
 

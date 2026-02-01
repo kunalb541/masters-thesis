@@ -31,7 +31,7 @@ To make the research problem tractable and measurable, this thesis addresses the
 \begin{enumerate}
     \item \textbf{Can a CNN-GRU architecture effectively distinguish between flat, PSPL, and binary microlensing events from synthetic Roman-like light curves?} We investigate whether deep learning can learn representations that capture caustic crossing signatures without explicit feature engineering.
     
-    \item \textbf{How does classification performance depend on the training data distribution?} We examine performance when training on events with clear caustic signatures (distinct distribution, $u_0 < 0.3$) versus more challenging realistic populations (baseline distribution, full parameter space).
+    \item \textbf{How does classification performance depend on the training data distribution?} We examine performance when training on events with clear caustic signatures (distinct distribution, $u_0 < 0.3$) versus more challenging realistic populations (general distribution, full parameter space).
     
     \item \textbf{What are the dominant error patterns and do they reflect physical limitations or algorithmic failures?} We analyze the confusion matrix to determine whether misclassifications occur in regimes where binary events are genuinely indistinguishable from single lenses.
     
@@ -46,11 +46,11 @@ These questions provide a structured framework for evaluating the feasibility of
 To address these research questions, this thesis pursues the following concrete objectives:
 
 \begin{enumerate}
-    \item \textbf{Synthetic Data Generation:} Generate a large-scale synthetic dataset of 900,000 high-fidelity light curves (600,000 training, 300,000 test) using VBBinaryLensing with Roman-like observational parameters (15-minute cadence, 72-day seasons). Implement a dual-distribution sampling strategy: a distinct distribution emphasizing clear caustic signatures ($u_0 < 0.3$, $s \in [0.8, 1.2]$) and a baseline distribution representing the expected Roman event population across the full parameter space.
+    \item \textbf{Synthetic Data Generation:} Generate a large-scale synthetic dataset of 900,000 high-fidelity light curves (600,000 training, 300,000 test) using VBBinaryLensing with Roman-like observational parameters (15-minute cadence, 72-day seasons). Implement a dual-distribution sampling strategy: a distinct distribution emphasizing clear caustic signatures ($u_0 < 0.3$, $s \in [0.8, 1.2]$) and a general distribution representing the expected Roman event population across the full parameter space.
     
     \item \textbf{Architecture Development:} Design and implement a CNN-GRU hierarchical classifier specifically tailored for microlensing light curves. The architecture combines convolutional layers for local feature extraction (caustic crossings) with GRU layers for long-term temporal memory, using a two-stage hierarchical structure (Flat vs Non-Flat, then PSPL vs Binary) to reflect the logical classification problem.
     
-    \item \textbf{Performance Evaluation:} Evaluate classification accuracy, precision, recall, F1-scores, and ROC-AUC on held-out test sets from both distinct and baseline distributions. Analyze confusion matrices to identify error patterns and assess whether performance degradation reflects genuine physical detection limits.
+    \item \textbf{Performance Evaluation:} Evaluate classification accuracy, precision, recall, F1-scores, and ROC-AUC on held-out test sets from both distinct and general distributions. Analyze confusion matrices to identify error patterns and assess whether performance degradation reflects genuine physical detection limits.
     
     \item \textbf{Model Interpretability:} Examine calibration curves to verify that predicted probabilities accurately reflect true classification accuracy. Analyze example probability evolution trajectories showing how classifications update as observations arrive during the 72-day season.
 \end{enumerate}
@@ -63,9 +63,9 @@ Together, these objectives aim to demonstrate the feasibility of deep learning f
 This thesis makes the following contributions to automated microlensing classification:
 
 \begin{enumerate}
-    \item \textbf{Large-Scale Synthetic Dataset:} We generate 900,000 high-fidelity synthetic light curves using VBBinaryLensing with Roman-like observational parameters (15-minute cadence, 72-day seasons). The dataset includes 600,000 training events and 300,000 test events with equal representation of three classes (flat, PSPL, binary). A dual-distribution strategy—distinct events with clear caustic signatures ($u_0 < 0.3$) and baseline events representing the full parameter space—enables controlled evaluation of generalization.
+    \item \textbf{Large-Scale Synthetic Dataset:} We generate 900,000 high-fidelity synthetic light curves using VBBinaryLensing with Roman-like observational parameters (15-minute cadence, 72-day seasons). The dataset includes 600,000 training events and 300,000 test events with equal representation of three classes (flat, PSPL, binary). A dual-distribution strategy—distinct events with clear caustic signatures ($u_0 < 0.3$) and general events representing the full parameter space—enables controlled evaluation of generalization.
     
-    \item \textbf{Proof-of-Concept CNN-GRU Classifier:} We demonstrate that a compact hierarchical architecture (~15,400 parameters) can achieve 99.65\% accuracy on events with clear binary signatures, validating that deep learning can recognize caustic crossing patterns without hand-engineered features. The hierarchical structure (Flat vs Non-Flat, then PSPL vs Binary) naturally decomposes the classification problem.
+    \item \textbf{Proof-of-Concept CNN-GRU Classifier:} We demonstrate that a compact hierarchical architecture (~33,541 parameters) can achieve 99.65\% accuracy on events with clear binary signatures, validating that deep learning can recognize caustic crossing patterns without hand-engineered features. The hierarchical structure (Flat vs Non-Flat, then PSPL vs Binary) naturally decomposes the classification problem.
     
     \item \textbf{Calibration Assessment:} We demonstrate that the model produces well-calibrated probability estimates where predicted confidence levels accurately reflect true classification accuracy. This calibration is essential for operational use, enabling reliable event prioritization based on model outputs.
     
@@ -89,11 +89,11 @@ The remainder of this thesis is organized as follows:
 
 \medskip  % Space between items
 
-\noindent\textbf{Chapter 4: Methodology} describes the technical approach. We explain the synthetic data generation using VBBinaryLensing to create 900,000 Roman-like light curves, explain the dual-distribution sampling strategy (distinct vs baseline), present the CNN-GRU hierarchical architecture, and document the training procedures and evaluation protocols.
+\noindent\textbf{Chapter 4: Methodology} describes the technical approach. We explain the synthetic data generation using VBBinaryLensing to create 900,000 Roman-like light curves, explain the dual-distribution sampling strategy (distinct vs general), present the CNN-GRU hierarchical architecture, and document the training procedures and evaluation protocols.
 
 \medskip  % Space between items
 
-\noindent\textbf{Chapter 5: Results} presents classification performance on distinct and baseline test sets. We report overall accuracy, per-class metrics, confusion matrices, and calibration curves. Analysis of error patterns reveals that Binary$\to$PSPL misclassifications dominate, consistent with physical degeneracies at high impact parameters. Probability evolution examples demonstrate how classifications update as observations arrive.
+\noindent\textbf{Chapter 5: Results} presents classification performance on distinct and general test sets. We report overall accuracy, per-class metrics, confusion matrices, and calibration curves. Analysis of error patterns reveals that Binary$\to$PSPL misclassifications dominate, consistent with physical degeneracies at high impact parameters. Probability evolution examples demonstrate how classifications update as observations arrive.
 
 \medskip  % Space between items
 
