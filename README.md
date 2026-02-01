@@ -1,4 +1,4 @@
-# Master's Thesis: Deep Learning for Microlensing Event Classification
+# Master's Thesis
 
 **Author:** Kunal Bhatia  
 **Degree:** Master of Science  
