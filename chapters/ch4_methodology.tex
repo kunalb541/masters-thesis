@@ -31,7 +31,7 @@ where $u_0$ is the impact parameter (minimum lens-source separation in Einstein 
 
 \paragraph{Binary Events:} For binary lenses, no closed-form solution exists; VBBinaryLensing employs adaptive contour integration to solve the lens equation numerically, capturing the complex caustic structures that produce the distinctive sharp features in binary light curves. Binary events include all PSPL parameters ($u_0$, $t_E$, $t_0$) plus four additional parameters: mass ratio $q$ defining the companion mass relative to the primary, separation $s$ in Einstein radii, source radius $\rho$ governing finite source effects during caustic crossings, and trajectory angle $\alpha$ determining the source's path relative to the lens geometry. Unlike PSPL events which treat the source as a point, binary simulations account for the extended source size through the $\rho$ parameter, essential for accurate modeling of caustic crossing features where magnification gradients are steep. The magnification pattern $A_{\text{Binary}}(t, \rho)$ exhibits sharp spikes when the source crosses caustic curves, creating the temporal signatures that enable binary detection.
 
-Each simulation represents a 72-day observing season with 15-minute cadence, yielding approximately 6,912 observations per event. We sample physical parameters from distributions designed to represent the expected Roman event population, detailed in Tables~\ref{tab:shared_params}--\ref{tab:binary_params}. Impact parameters range uniformly from $u_0 = 0.001$ to $u_0 = 1.0$, Einstein timescales follow a logarithmic distribution from 10 to 100 days, and binary parameters span wide ranges: mass ratios from $q = 0.001$ (planetary) to $q = 1.0$ (equal mass), separations from $s = 0.3$ to $s = 3.0$ Einstein radii, and finite source radii from $\rho = 0.001$ to $\rho = 0.01$.
+Each simulation represents a 72-day observing season with 15-minute cadence, yielding approximately 6,912 observations per event. We sample physical parameters from distributions designed to represent the expected Roman event population, detailed in Tables~\ref{tab:shared_params}--\ref{tab:binary_params}. Impact parameters range uniformly from $u_0 = 0.001$ to $u_0 = 1.0$, Einstein timescales follow a logarithmic distribution from 3 to 18 days (restricted to ensure events fit within the 72-day season with sufficient pre- and post-peak baseline), and binary parameters span wide ranges: mass ratios from $q = 0.001$ (planetary) to $q = 1.0$ (equal mass), separations from $s = 0.3$ to $s = 3.0$ Einstein radii, and finite source radii from $\rho = 0.001$ to $\rho = 0.01$.
 
 \begin{table}[tb]
 \centering
@@ -42,7 +42,7 @@ Each simulation represents a 72-day observing season with 15-minute cadence, yie
 \textbf{Parameter} & \textbf{Symbol} & \textbf{Baseline} & \textbf{Distinct}$^{\dagger}$ \\
 \midrule
 Impact parameter & $u_0$ & [0.001, 1.0] & [0.001, 0.3] \\
-Einstein timescale & $t_E$ (days) & [10, 100]$^{*}$ & [10, 100]$^{*}$ \\
+Einstein timescale & $t_E$ (days) & [3, 18]$^{*}$ & [3, 18]$^{*}$ \\
 Peak time offset & $t_0$ (days) & $\pm$20 & $\pm$20 \\
 Source flux & $F_0$ (counts) & [1000, 5000] & [1000, 5000] \\
 \bottomrule
@@ -51,7 +51,7 @@ Source flux & $F_0$ (counts) & [1000, 5000] & [1000, 5000] \\
 
 \begin{minipage}{\textwidth}
 \footnotesize
-$^{*}$Log-uniform sampling (equal probability per decade) \\
+$^{*}$Log-uniform sampling. Range restricted to 3--18 days to ensure events fit within 72-day season. \\
 $^{\dagger}$Distinct distribution restricts $u_0$ to enhance lensing signatures
 \end{minipage}
 \end{table}
@@ -81,7 +81,7 @@ $^{\dagger}$Distinct distribution restricts $s \in [0.8, 1.2]$ to maximize caust
 
 \subsection{Observational Realism}
 
-Synthetic light curves must replicate three key observational effects. First, temporal sampling follows Roman's 15-minute cadence with 5\% random gaps simulating weather interruptions and scheduling constraints \citep{Akeson2019}. Second, photometric noise follows a signal-dependent model accounting for both photon statistics and sky background:
+Synthetic light curves must replicate three key observational effects. First, temporal sampling follows Roman's 15-minute cadence with 5\% random gaps simulating downlink windows, pointing interruptions, and scheduling constraints \citep{Akeson2019}. Second, photometric noise follows a signal-dependent model accounting for both photon statistics and sky background:
 \begin{equation}
 \sigma_{\text{phot}}(F) = \sqrt{\frac{F}{G} + \sigma_{\mathrm{sky}}^2},
 \end{equation}
@@ -93,11 +93,11 @@ We employ a dual-distribution sampling strategy to balance two competing needs. 
 
 Training solely on baseline data yields models that generalize well to realistic populations but may miss clear signatures due to class overlap. Training solely on distinct data produces near-perfect accuracy on events with visible caustics but fails when applied to the full population. The solution is \textit{hybrid training} combining both distributions, exposing the model to both unambiguous examples and realistic population statistics. This approach proved essential for achieving balanced performance across both validation scenarios and operational conditions.
 
-The final dataset consists of 600,000 training events (200,000 per class: flat, PSPL, binary) and 300,000 independent test events (100,000 per class). Equal class proportions ensure unbiased training, though real survey populations are dominated by non-lensing light curves. Separate test sets for baseline and distinct distributions enable cross-evaluation studies examining how models trained on different parameter regimes generalize to different populations.
+The final dataset consists of 600,000 training events (200,000 per class: flat, PSPL, binary) and 300,000 held-out test events (100,000 per class). A small validation split (5\% of training data) is used during training for early stopping and hyperparameter selection. Equal class proportions in all splits ensure unbiased training, though real survey populations are dominated by non-lensing light curves. Separate test sets for baseline and distinct distributions enable cross-evaluation studies examining how models trained on different parameter regimes generalize to different populations.
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textit{[Figure 4.1: Three panels showing representative synthetic light curves for Flat (photometric noise only), PSPL (symmetric magnification peak), and Binary (caustic crossing features) events with Roman-like noise and sampling]}}
+\includegraphics[width=\textwidth]{figures/chapter4/example_light_curves.png}
 \caption{Example synthetic light curves for each event class. Flat events show constant flux with photometric noise. PSPL events exhibit symmetric magnification peaks computed from the analytical Paczy\'{n}ski formula. Binary events show sharp caustic crossing features computed via VBBinaryLensing with finite source effects, distinguishing them from the smooth PSPL profile.}
 \label{fig:example_lightcurves}
 \end{figure}
@@ -112,19 +112,19 @@ Each light curve enters the model as a variable-length sequence of observations,
 
 \subsection{Local Feature Extraction}
 
-Caustic crossings—the key signature distinguishing binary from single-lens events—typically evolve over hours. To detect these rapid features, the architecture employs convolutional layers that examine local temporal windows. We use two convolutional blocks with different temporal scales: the first examines patterns over 5 observations (1.25 hours at 15-minute cadence), while the second uses a dilated filter examining patterns over wider windows (2.5 hours). Together, these provide an effective temporal receptive field of approximately 3.25 hours, sufficient to capture most caustic crossing durations while remaining compact enough for rapid processing.
+Caustic crossings—the key signature distinguishing binary from single-lens events—typically evolve over hours. To detect these rapid features, the architecture employs convolutional layers \citep{LeCun1998} that examine local temporal windows. We use two convolutional blocks with different temporal scales: the first examines patterns over 5 observations (1.25 hours at 15-minute cadence), while the second uses a dilated filter examining patterns over wider windows (2.5 hours). Together, these provide an effective temporal receptive field of approximately 3.25 hours, sufficient to capture most caustic crossing durations while remaining compact enough for rapid processing.
 
 Critically, the convolutions are strictly \textit{causal}: at any timestep $t$, the output depends only on observations up to and including $t$, never future data. This ensures the model can process light curves in real time, updating its classification as each new observation arrives without requiring the complete event.
 
 \subsection{Sequence Memory}
 
-While local features capture caustic crossings, distinguishing event types also requires understanding the overall light curve shape across the full 72-day season. A recurrent network maintains a persistent hidden state that evolves as it processes each observation sequentially, allowing it to remember features like caustic crossings that occurred days before the current timestep. The architecture uses Gated Recurrent Units (GRUs), which balance memory capacity against computational efficiency through learned gating mechanisms that selectively retain or discard information.
+While local features capture caustic crossings, distinguishing event types also requires understanding the overall light curve shape across the full 72-day season. A recurrent network maintains a persistent hidden state that evolves as it processes each observation sequentially, allowing it to remember features like caustic crossings that occurred days before the current timestep. The architecture uses Gated Recurrent Units (GRUs) \citep{Cho2014,Chung2014}, which balance memory capacity against computational efficiency through learned gating mechanisms that selectively retain or discard information.
 
-Four GRU layers are stacked, with each layer's output feeding the next. Dropout regularization (randomly disabling 10–30\% of connections during training) prevents the model from over-relying on specific pathways, encouraging robust features that generalize to unseen data. The complete recurrent stack maintains both short-term memory of recent observations and long-term memory of features like early-season caustic crossings relevant for final classification decisions.
+Four GRU layers are stacked, with each layer's output feeding the next. Dropout regularization \citep{Srivastava2014} (randomly disabling 10–30\% of connections during training) prevents the model from over-relying on specific pathways, encouraging robust features that generalize to unseen data. The complete recurrent stack maintains both short-term memory of recent observations and long-term memory of features like early-season caustic crossings relevant for final classification decisions.
 
 \subsection{Sequence Aggregation}
 
-After processing the entire sequence, the model must condense the time-varying hidden states into a single fixed-length representation for classification. Two approaches were tested: simple averaging across all valid observations (mean pooling), and learned attention that weights different parts of the sequence by importance. Attention theoretically offers advantages by focusing on the most informative regions like caustic peaks while downweighting baseline regions, but in practice both approaches perform comparably—the classification layer can extract relevant information from the averaged representation. Mean pooling has no learnable parameters; attention adds approximately 16,000 parameters for its learned query and projection matrices.
+After processing the entire sequence, the model must condense the time-varying hidden states into a single fixed-length representation for classification. Two approaches were tested: simple averaging across all valid observations (mean pooling), and learned attention that weights different parts of the sequence by importance. Attention theoretically offers advantages by focusing on the most informative regions like caustic peaks while downweighting baseline regions, but in practice both approaches perform comparably—the classification layer can extract relevant information from the averaged representation. Mean pooling has no learnable parameters; attention adds approximately 4,100 parameters for its learned query and projection matrices.
 
 \subsection{Hierarchical Classification}
 
@@ -137,11 +137,11 @@ P(\text{Binary}) &= P(\text{Non-Flat}) \times P(\text{Binary} \mid \text{Non-Fla
 
 This hierarchical structure prevents the dominant flat class from suppressing gradients needed to distinguish subtle binary features. Two auxiliary outputs provide additional training signals: a direct three-class softmax head encourages the model to learn representations useful for all classification tasks simultaneously, and a caustic detection head explicitly predicts whether sharp caustic features are present, helping identify low mass-ratio binaries where secondary peaks might be subtle.
 
-The complete architecture contains approximately 15,400 trainable parameters—three orders of magnitude smaller than typical deep networks. This compact size enables sub-millisecond inference: a single forward pass on an NVIDIA A100 GPU processes one event in under 0.5 milliseconds, allowing real-time classification of thousands of events as observations arrive.
+The complete architecture contains approximately 33,500 trainable parameters (d\_model=32, 4 GRU layers)—three orders of magnitude smaller than typical deep networks. This compact size enables sub-millisecond inference: a single forward pass on an NVIDIA A100 GPU processes one event in under 0.5 milliseconds, allowing real-time classification of thousands of events as observations arrive.
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textit{[Figure 4.2: Schematic diagram showing data flow: Input (flux, time intervals, flags) → Convolutional layers (local features, 3.25-hour receptive field) → GRU layers (sequence memory) → Pooling → Hierarchical head (Stage 1: Flat vs Non-Flat; Stage 2: PSPL vs Binary)]}}
+\includegraphics[width=\textwidth]{figures/chapter4/architecture_diagram.pdf}
 \caption{Architecture of the hierarchical classifier. Convolutional layers extract local temporal patterns including caustic crossings. Stacked GRU layers maintain memory across the 72-day season. The hierarchical head performs two-stage classification: first detecting genuine microlensing, then distinguishing lens configurations.}
 \label{fig:architecture}
 \end{figure}
@@ -150,11 +150,11 @@ The complete architecture contains approximately 15,400 trainable parameters—t
 
 \subsection{Loss Function Design}
 
-The training objective combines four terms reflecting different aspects of desired behavior. Stage 1 loss uses binary cross-entropy to train the event detection classifier, receiving the highest weight (2.0) because missing genuine events is more detrimental than misclassifying event types. Stage 2 loss trains the PSPL versus binary classifier (weight 1.0), applied only to truly non-flat events. An auxiliary three-class cross-entropy provides a conventional training signal (weight 0.3), and a calibration term encourages well-calibrated probabilities by optimizing the likelihood of the true class (weight 0.5). Well-calibrated outputs ensure that when the model reports 90\% confidence, approximately 90\% of such predictions are correct—critical for operational decisions about follow-up observations.
+The training objective combines four terms reflecting different aspects of desired behavior. Stage 1 loss uses binary cross-entropy to train the event detection classifier, receiving the highest weight (2.0) because missing genuine events is more detrimental than misclassifying event types. Stage 2 loss trains the PSPL versus binary classifier (weight 1.0), applied only to truly non-flat events. An auxiliary three-class cross-entropy provides a conventional training signal (weight 0.3), and a calibration term \citep{Guo2017} encourages well-calibrated probabilities by optimizing the likelihood of the true class (weight 0.5). Well-calibrated outputs ensure that when the model reports 90\% confidence, approximately 90\% of such predictions are correct—critical for operational decisions about follow-up observations.
 
 \subsection{Optimization and Training Infrastructure}
 
-Training employed the AdamW optimizer \citep{Loshchilov2019} with initial learning rate $5 \times 10^{-4}$, decaying following a cosine schedule to minimum $1 \times 10^{-6}$ over 300 epochs. A 3-epoch warmup phase gradually increases the learning rate from zero, stabilizing early training. Mixed-precision arithmetic (16-bit floating point for most operations, 32-bit for critical computations) approximately doubles training speed while maintaining numerical stability through gradient scaling.
+Training employed the AdamW optimizer \citep{Loshchilov2019} with initial learning rate $5 \times 10^{-4}$, decaying following a cosine schedule to minimum $1 \times 10^{-6}$ over 50 epochs. A 3-epoch warmup phase gradually increases the learning rate from zero, stabilizing early training. Mixed-precision arithmetic (16-bit floating point for most operations, 32-bit for critical computations) approximately doubles training speed while maintaining numerical stability through gradient scaling.
 
 The 600,000 training examples necessitated distributed computing. Training employed 24 to 48 NVIDIA A100 GPUs across multiple compute nodes, with each GPU processing batches of 256 events (effective batch sizes 12,288–24,576 events through gradient accumulation). Data were loaded into RAM-backed filesystem on each node, eliminating disk I/O bottlenecks. PyTorch's DistributedDataParallel framework handles gradient synchronization automatically: after each backward pass, gradients are averaged across all GPUs ensuring all model copies stay synchronized. Complete training required approximately 8 hours wall-clock time on 24 GPUs.
 
@@ -162,7 +162,7 @@ Regularization strategies prevent overfitting: dropout randomly disables 10–30
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textit{[Figure 4.3: Training and validation loss curves over 300 epochs showing steady convergence without overfitting (validation loss tracks training loss)]}}
+\fbox{\textit{[Training convergence plot - requires actual training logs from runs]}}
 \caption{Training convergence for a representative model. Both losses decrease steadily through warmup and cosine decay phases. Close agreement between training and validation curves indicates good generalization.}
 \label{fig:training_convergence}
 \end{figure}
@@ -179,17 +179,13 @@ Primary metrics include overall accuracy (fraction correct), per-class precision
 
 Special attention is devoted to performance versus impact parameter $u_0$ for binary events. Classification accuracy naturally degrades at large $u_0$ where binary features become physically subtle or absent, but quantifying this relationship reveals whether observed degradation represents physical detection limits or algorithmic failures. We plot accuracy versus $u_0$ and construct confusion matrices stratified by impact parameter, demonstrating that performance drops at $u_0 > 0.3$ reflect genuine physical constraints—binary events become indistinguishable from single-lens events at large separations regardless of algorithmic sophistication.
 
-\subsection{Baseline Comparisons}
-
-To contextualize performance, we compare against two baselines. Traditional $\chi^2$ model fitting fits both PSPL and binary models to light curves and selects the best-fit configuration by goodness-of-fit. While this can achieve high accuracy given sufficient computational resources and complete light curves, it requires orders of magnitude more computation than the neural network and cannot provide real-time classification as events unfold. A simple logistic regression on summary features (maximum flux, duration above threshold) establishes minimum achievable performance through basic heuristics.
-
 \subsection{Real-Time Capability}
 
 The classifier's real-time capability is evaluated by truncating test light curves at various completeness fractions and recording accuracy using only partial observations. Early detection curves plot accuracy versus completeness, typically showing the model achieves 80–90\% of final accuracy using only the first 30–50\% of observations. This enables early triggering of follow-up observations while events are still developing, maximizing scientific return from coordinated ground-based campaigns. Reliability diagrams stratified by completeness verify the model remains well-calibrated even when making decisions from incomplete information.
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textit{[Figure 4.4: Four confusion matrices in 2×2 grid showing baseline-trained and distinct-trained models evaluated on baseline and distinct test sets]}}
+\fbox{\textit{[Cross-evaluation confusion matrices - see evaluation results]}}
 \caption{Cross-evaluation results. Diagonal elements show correct classifications; off-diagonal elements reveal where models trained on different parameter distributions succeed or struggle when evaluated on different populations.}
 \label{fig:cross_evaluation}
 \end{figure}
