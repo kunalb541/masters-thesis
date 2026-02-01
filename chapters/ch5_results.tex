@@ -1,7 +1,139 @@
 \chapter{Results}
 \label{ch:results}
 
-% Chapter 5: Results
+In this chapter, we present the comprehensive evaluation of the hierarchical CNN-GRU classifier. The following figures represent the complete set of generated metrics and event evolutions from the distinct test set evaluation.
 
-[Content to be written]
+\section{Dataset Statistics}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/class_distributions.png}
+    \caption[Class distributions]{Class distributions showing the balance of Flat, PSPL, and Binary events in the test set.}
+    \label{fig:class_distributions}
+\end{figure}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/example_light_curves.png}
+    \caption[Example light curves]{Example light curves from the test set showing representative morphologies for each class.}
+    \label{fig:example_light_curves}
+\end{figure}
+
+\clearpage
+\section{Classification Metrics}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/confusion_matrix.png}
+    \caption[Confusion matrix]{Confusion matrix evaluated on the distinct test set.}
+    \label{fig:confusion_matrix}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/per_class_metrics.png}
+    \caption[Per-class performance metrics]{Per-class performance metrics including Precision, Recall, and F1-Score.}
+    \label{fig:per_class_metrics}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/roc_curves.png}
+    \caption[ROC curves]{Receiver Operating Characteristic (ROC) curves demonstrating discrimination performance.}
+    \label{fig:roc_curves}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/calibration.png}
+    \caption[Calibration plots]{Probability calibration plots verifying the reliability of predicted confidence scores.}
+    \label{fig:calibration}
+\end{figure}
+
+\clearpage
+\section{Physical Analysis \& Bias}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/u0_dependency.png}
+    \caption[Impact parameter dependency]{Classification accuracy as a function of the impact parameter $u_0$.}
+    \label{fig:u0_dependency}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/temporal_bias_check.png}
+    \caption[Temporal bias check]{Temporal bias check analyzing performance stability across the observing window.}
+    \label{fig:temporal_bias_check}
+\end{figure}
+
+\clearpage
+\section{Event Evolution Examples}
+The following figures track the model's prediction probability as more data points are observed over time.
+
+\subsection*{Binary Events}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Binary_3.png}
+    \caption[Evolution of Binary Event 3]{Evolution of predicted probabilities for Binary Event 3.}
+    \label{fig:evolution_binary_3}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Binary_12.png}
+    \caption[Evolution of Binary Event 12]{Evolution of predicted probabilities for Binary Event 12.}
+    \label{fig:evolution_binary_12}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Binary_16.png}
+    \caption[Evolution of Binary Event 16]{Evolution of predicted probabilities for Binary Event 16.}
+    \label{fig:evolution_binary_16}
+\end{figure}
+
+\clearpage
+\subsection*{PSPL Events}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_PSPL_1.png}
+    \caption[Evolution of PSPL Event 1]{Evolution of predicted probabilities for PSPL Event 1.}
+    \label{fig:evolution_pspl_1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_PSPL_4.png}
+    \caption[Evolution of PSPL Event 4]{Evolution of predicted probabilities for PSPL Event 4.}
+    \label{fig:evolution_pspl_4}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_PSPL_5.png}
+    \caption[Evolution of PSPL Event 5]{Evolution of predicted probabilities for PSPL Event 5.}
+    \label{fig:evolution_pspl_5}
+\end{figure}
+
+\clearpage
+\subsection*{Flat Events}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Flat_0.png}
+    \caption[Evolution of Flat Event 0]{Evolution of predicted probabilities for Flat Event 0.}
+    \label{fig:evolution_flat_0}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Flat_2.png}
+    \caption[Evolution of Flat Event 2]{Evolution of predicted probabilities for Flat Event 2.}
+    \label{fig:evolution_flat_2}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/chapter5/evolution_Flat_6.png}
+    \caption[Evolution of Flat Event 6]{Evolution of predicted probabilities for Flat Event 6.}
+    \label{fig:evolution_flat_6}
+\end{figure}
