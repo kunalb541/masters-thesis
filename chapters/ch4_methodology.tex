@@ -35,7 +35,7 @@ Each simulation represents a 72-day observing season with 15-minute cadence, yie
 
 \begin{table}[tb]
 \centering
-\caption{Shared parameters for all synthetic event types (Flat, PSPL, and Binary).}
+\caption[Shared parameters for all synthetic event types]{Shared parameters for all synthetic event types (Flat, PSPL, and Binary).}
 \label{tab:shared_params}
 \begin{tabular}{llcc}
 \toprule
@@ -58,7 +58,7 @@ $^{\dagger}$Distinct distribution restricts $u_0$ to enhance lensing signatures
 
 \begin{table}[tb]
 \centering
-\caption{Additional parameters for binary lens events only. PSPL events use only the shared parameters from Table~\ref{tab:shared_params} with the analytical point-source formula.}
+\caption[Additional parameters for binary lens events]{Additional parameters for binary lens events only. PSPL events use only the shared parameters from Table~\ref{tab:shared_params} with the analytical point-source formula.}
 \label{tab:binary_params}
 \begin{tabular}{llcc}
 \toprule
@@ -98,7 +98,7 @@ The final dataset consists of 600,000 training events (200,000 per class: flat, 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter4/example_light_curves.png}
-\caption{Example synthetic light curves for each event class. Flat events show constant flux with photometric noise. PSPL events exhibit symmetric magnification peaks computed from the analytical Paczy\'{n}ski formula. Binary events show sharp caustic crossing features computed via VBBinaryLensing with finite source effects, distinguishing them from the smooth PSPL profile.}
+\caption[Example synthetic light curves for each event class]{Example synthetic light curves for each event class. Flat events show constant flux with photometric noise. PSPL events exhibit symmetric magnification peaks computed from the analytical Paczy\'{n}ski formula. Binary events show sharp caustic crossing features computed via VBBinaryLensing with finite source effects, distinguishing them from the smooth PSPL profile.}
 \label{fig:example_lightcurves}
 \end{figure}
 
@@ -142,7 +142,7 @@ The complete architecture contains 33,541 trainable parameters (d\_model=32, 4 G
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/chapter4/architecture_diagram.pdf}
-\caption{Architecture of the hierarchical classifier. Convolutional layers extract local temporal patterns including caustic crossings. Stacked GRU layers maintain memory across the 72-day season. The hierarchical head performs two-stage classification: first detecting genuine microlensing, then distinguishing lens configurations.}
+\caption[Architecture of the hierarchical classifier]{Architecture of the hierarchical classifier. Convolutional layers extract local temporal patterns including caustic crossings. Stacked GRU layers maintain memory across the 72-day season. The hierarchical head performs two-stage classification: first detecting genuine microlensing, then distinguishing lens configurations.}
 \label{fig:architecture}
 \end{figure}
 
